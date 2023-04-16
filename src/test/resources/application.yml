@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+spring:
+  datasource:
+    url: jdbc:h2://mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    # 显示sql语句
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        # 格式化sql语句
+        format_sql: true
+logging:
+  level:
+    # 用于查看传入的参数
+    # 基本类型绑定
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    # 枚举类型绑定
+    org.hibernate.metamodel.model.convert.internal.NamedEnumValueConverter: trace
