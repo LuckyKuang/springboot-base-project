@@ -1,16 +1,21 @@
 package com.luckykuang.auth.service.impl;
-import com.luckykuang.auth.model.Users;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
 import com.luckykuang.auth.model.Roles;
 import com.luckykuang.auth.model.UserRole;
 import com.luckykuang.auth.model.UserRoleId;
+import com.luckykuang.auth.model.Users;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.repository.UserRepository;
 import com.luckykuang.auth.repository.UserRoleRepository;
 import com.luckykuang.auth.service.RoleService;
 import com.luckykuang.auth.utils.AssertUtils;
+import com.luckykuang.auth.utils.PageUtils;
+import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +34,14 @@ public class RoleServiceImpl implements RoleService {
     private final UserRoleRepository userRoleRepository;
 
     @Override
+    public Page<Roles> queryRolesByPage(PageVo page) {
+        Pageable pageable = PageUtils.getPageable(page);
+        return roleRepository.findAll(pageable);
+    }
+
+    @Override
     public List<Roles> queryRoles() {
-        return roleRepository.findAll();
+        return roleRepository.findAll(Sort.by("updateTime"));
     }
 
     @Override
@@ -48,9 +59,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Roles updateRole(Roles roles) {
-        Optional<Roles> repositoryById = roleRepository.findById(roles.getRoleId());
+        Optional<Roles> repositoryById = roleRepository.findById(roles.getId());
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
-        Optional<Roles> rolesOptional = roleRepository.findByRoleIdIsNotAndRoleName(roles.getRoleId(), roles.getRoleName());
+        Optional<Roles> rolesOptional = roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName());
         AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
 
         return roleRepository.save(roles);

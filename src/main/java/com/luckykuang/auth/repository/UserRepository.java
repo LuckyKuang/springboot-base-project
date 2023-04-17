@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<Users,Long> {
     Optional<Users> findByUsername(String userName);
 
-    Optional<Users> findByUserIdIsNotAndUsername(Long userId, String userName);
+    Optional<Users> findByIdIsNotAndUsername(Long userId, String userName);
 
     Optional<Users> findByPhone(String phone);
 }

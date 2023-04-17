@@ -3,7 +3,9 @@ package com.luckykuang.auth.controller;
 import com.luckykuang.auth.model.*;
 import com.luckykuang.auth.utils.ApiResult;
 import com.luckykuang.auth.service.RoleService;
+import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,10 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    @GetMapping(path = "page")
+    public ApiResult<Page<Roles>> queryRolesByPage(PageVo page){
+        return ApiResult.success(roleService.queryRolesByPage(page));
+    }
     @GetMapping
     public ApiResult<List<Roles>> queryRoles(){
         return ApiResult.success(roleService.queryRoles());

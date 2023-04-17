@@ -1,6 +1,5 @@
 package com.luckykuang.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -9,14 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.TenantId;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,17 +25,7 @@ import java.util.List;
 @Entity
 @Table(name = "ky_auth_role")
 @EntityListeners(AuditingEntityListener.class)
-public class Roles {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id", nullable = false)
-    private Long roleId;
-
-    @NotBlank
-    @Column(nullable = false, length = 32)
-    @TenantId
-    private String tenantId;
+public class Roles extends BaseParams {
 
     @Column(nullable = false)
     private Long parentId;
@@ -63,24 +46,6 @@ public class Roles {
     private String roleName;
 
     private String description;
-
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private Long createBy;
-
-    @LastModifiedBy
-    @Column(nullable = false)
-    private Long updateBy;
-
-    @CreatedDate
-    @Column(nullable = false, precision = 3, updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    @LastModifiedDate
-    @Column(nullable = false, precision = 3)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(

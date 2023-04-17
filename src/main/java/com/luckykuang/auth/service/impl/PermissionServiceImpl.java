@@ -10,7 +10,12 @@ import com.luckykuang.auth.repository.RolePermissionRepository;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.service.PermissionService;
 import com.luckykuang.auth.utils.AssertUtils;
+import com.luckykuang.auth.utils.PageUtils;
+import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +34,14 @@ public class PermissionServiceImpl implements PermissionService {
     private final RolePermissionRepository rolePermissionRepository;
 
     @Override
+    public Page<Permissions> queryPermissionsByPage(PageVo page) {
+        Pageable pageable = PageUtils.getPageable(page);
+        return permissionRepository.findAll(pageable);
+    }
+
+    @Override
     public List<Permissions> queryPermissions() {
-        return permissionRepository.findAll();
+        return permissionRepository.findAll(Sort.by("updateTime"));
     }
 
     @Override
@@ -48,10 +59,10 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public Permissions updatePermission(Permissions permissions) {
-        Optional<Permissions> repositoryById = permissionRepository.findById(permissions.getPermissionId());
+        Optional<Permissions> repositoryById = permissionRepository.findById(permissions.getId());
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
         Optional<Permissions> permissionsOptional = permissionRepository
-                .findByPermissionIdIsNotAndPermissionName(permissions.getPermissionId(), permissions.getPermissionName());
+                .findByIdIsNotAndPermissionName(permissions.getId(), permissions.getPermissionName());
         AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
 
         return permissionRepository.save(permissions);

@@ -1,6 +1,5 @@
 package com.luckykuang.auth.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.constant.UserStatusEnum;
 import com.luckykuang.auth.validation.Mobile;
@@ -8,15 +7,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.hibernate.annotations.TenantId;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,17 +33,7 @@ import java.util.List;
         }
 )
 @EntityListeners(AuditingEntityListener.class)
-public class Users {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @NotBlank
-    @Column(nullable = false, length = 32)
-    @TenantId
-    private String tenantId;
+public class Users extends BaseParams {
 
     @NotBlank
     @Column(nullable = false, length = 128)
@@ -71,24 +57,6 @@ public class Users {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
     private UserStatusEnum userStatus;
-
-    @CreatedBy
-    @Column(nullable = false, updatable = false)
-    private Long createBy;
-
-    @LastModifiedBy
-    @Column(nullable = false)
-    private Long updateBy;
-
-    @CreatedDate
-    @Column(nullable = false, precision = 3, updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-    @LastModifiedDate
-    @Column(nullable = false, precision = 3)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(

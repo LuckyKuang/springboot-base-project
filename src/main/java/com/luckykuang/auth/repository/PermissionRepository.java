@@ -14,5 +14,5 @@ import java.util.Optional;
 public interface PermissionRepository extends JpaRepository<Permissions,Long> {
     Optional<Permissions> findByPermissionName(String permissionName);
 
-    Optional<Permissions> findByPermissionIdIsNotAndPermissionName(Long permissionId, String permissionName);
+    Optional<Permissions> findByIdIsNotAndPermissionName(Long permissionId, String permissionName);
 }

@@ -3,7 +3,9 @@ package com.luckykuang.auth.controller;
 import com.luckykuang.auth.model.Users;
 import com.luckykuang.auth.utils.ApiResult;
 import com.luckykuang.auth.service.UserService;
+import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,10 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping(path = "page")
+    public ApiResult<Page<Users>> queryUsersByPage(PageVo page){
+        return ApiResult.success(userService.queryUsersByPage(page));
+    }
     @GetMapping
     public ApiResult<List<Users>> queryUsers(){
         return ApiResult.success(userService.queryUsers());
