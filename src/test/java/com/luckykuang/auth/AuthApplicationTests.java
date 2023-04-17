@@ -1,4 +1,4 @@
-package com.luckykuang.learning_demo;
+package com.luckykuang.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

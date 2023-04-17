@@ -1,10 +1,7 @@
 package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
-import com.luckykuang.auth.model.LoginUser;
-import com.luckykuang.auth.model.Roles;
-import com.luckykuang.auth.model.UserRole;
-import com.luckykuang.auth.model.Users;
+import com.luckykuang.auth.model.*;
 import com.luckykuang.auth.repository.PermissionRepository;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.repository.UserRepository;
@@ -38,7 +35,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Users> users = userRepository.findByUsername(username);
         AssertUtils.isTrue(users.isPresent(), ErrorCodeEnum.FORBIDDEN);
-        Optional<UserRole> userRoleOptional = userRoleRepository.findUserRoleByIdAndRoleUserFkAndId(users.get().getId());
+        UserRoleId id = new UserRoleId();
+        id.setUserId(users.get().getId());
+        Optional<UserRole> userRoleOptional = userRoleRepository.findUserRoleById(id);
         AssertUtils.isTrue(userRoleOptional.isPresent(), ErrorCodeEnum.FORBIDDEN);
         return new LoginUser(
                 users.get().getUsername(),
