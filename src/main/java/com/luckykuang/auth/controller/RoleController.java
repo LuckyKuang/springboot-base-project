@@ -1,6 +1,6 @@
 package com.luckykuang.auth.controller;
 
-import com.luckykuang.auth.model.Roles;
+import com.luckykuang.auth.model.*;
 import com.luckykuang.auth.utils.ApiResult;
 import com.luckykuang.auth.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -42,4 +42,10 @@ public class RoleController {
         roleService.deleteRole(roleId);
         return ApiResult.success();
     }
+
+    @PostMapping(path = "authUserRole")
+    public ApiResult<UserRole> authUserRole(@RequestBody UserRoleId userRoleId){
+        return ApiResult.success(roleService.authUserRole(userRoleId));
+    }
+
 }

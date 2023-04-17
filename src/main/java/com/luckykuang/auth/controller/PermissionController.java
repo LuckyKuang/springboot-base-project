@@ -1,8 +1,10 @@
 package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.model.Permissions;
-import com.luckykuang.auth.utils.ApiResult;
+import com.luckykuang.auth.model.RolePermission;
+import com.luckykuang.auth.model.RolePermissionId;
 import com.luckykuang.auth.service.PermissionService;
+import com.luckykuang.auth.utils.ApiResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +44,10 @@ public class PermissionController {
         permissionService.deletePermission(permissionId);
         return ApiResult.success();
     }
+
+    @PostMapping(path = "authRolePermission")
+    public ApiResult<RolePermission> authRolePermission(@RequestBody RolePermissionId rolePermissionId){
+        return ApiResult.success(permissionService.authRolePermission(rolePermissionId));
+    }
+
 }

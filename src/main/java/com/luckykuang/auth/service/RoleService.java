@@ -1,6 +1,8 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.model.Roles;
+import com.luckykuang.auth.model.UserRole;
+import com.luckykuang.auth.model.UserRoleId;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,6 @@ public interface RoleService {
     Roles updateRole(Roles roles);
 
     void deleteRole(Long roleId);
+
+    UserRole authUserRole(UserRoleId userRoleId);
 }

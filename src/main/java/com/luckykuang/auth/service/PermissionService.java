@@ -1,6 +1,8 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.model.Permissions;
+import com.luckykuang.auth.model.RolePermission;
+import com.luckykuang.auth.model.RolePermissionId;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,6 @@ public interface PermissionService {
     Permissions updatePermission(Permissions permissions);
 
     void deletePermission(Long permissionId);
+
+    RolePermission authRolePermission(RolePermissionId rolePermissionId);
 }

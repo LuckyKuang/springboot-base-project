@@ -1,5 +1,6 @@
 package com.luckykuang.auth.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class UserRole {
     @EmbeddedId
     private UserRoleId id;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(
@@ -32,6 +34,7 @@ public class UserRole {
     )
     private Users userRoleFk;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
     @MapsId("roleId")
     @JoinColumn(

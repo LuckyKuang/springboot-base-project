@@ -1,8 +1,10 @@
 package com.luckykuang.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +44,20 @@ public class Permissions {
     @TenantId
     private String tenantId;
 
+    @Column(nullable = false)
+    private Long parentId;
+
+    @Column(length = 16)
+    private String treeKey;
+
+    @NotNull
+    @Column(nullable = false)
+    private Integer treeLevel;
+
+    @NotBlank
+    @Column(nullable = false, length = 32)
+    private String permissionField;
+
     @NotBlank
     @Column(nullable = false, length = 128)
     private String permissionName;
@@ -66,6 +82,7 @@ public class Permissions {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             mappedBy = "permissionRoleFk"

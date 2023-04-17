@@ -2,7 +2,12 @@ package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
 import com.luckykuang.auth.model.Permissions;
+import com.luckykuang.auth.model.RolePermission;
+import com.luckykuang.auth.model.RolePermissionId;
+import com.luckykuang.auth.model.Roles;
 import com.luckykuang.auth.repository.PermissionRepository;
+import com.luckykuang.auth.repository.RolePermissionRepository;
+import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.service.PermissionService;
 import com.luckykuang.auth.utils.AssertUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,9 @@ import java.util.Optional;
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
+    private final RoleRepository roleRepository;
+    private final RolePermissionRepository rolePermissionRepository;
+
     @Override
     public List<Permissions> queryPermissions() {
         return permissionRepository.findAll();
@@ -52,5 +60,18 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public void deletePermission(Long permissionId) {
         permissionRepository.deleteById(permissionId);
+    }
+
+    @Override
+    public RolePermission authRolePermission(RolePermissionId rolePermissionId) {
+        Optional<Permissions> permissions = permissionRepository.findById(rolePermissionId.getPermissionId());
+        Optional<Roles> roles = roleRepository.findById(rolePermissionId.getRoleId());
+        AssertUtils.isTrue(permissions.isPresent() && roles.isPresent(),ErrorCodeEnum.BAD_REQUEST);
+
+        RolePermission rolePermission = new RolePermission();
+        rolePermission.setId(rolePermissionId);
+        rolePermission.setRolePermissionFk(roles.get());
+        rolePermission.setPermissionRoleFk(permissions.get());
+        return rolePermissionRepository.save(rolePermission);
     }
 }
