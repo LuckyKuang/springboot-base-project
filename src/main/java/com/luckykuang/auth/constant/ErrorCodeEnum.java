@@ -19,9 +19,12 @@ public enum ErrorCodeEnum {
     NOT_IMPLEMENTED(501, "功能未实现/未开启"),
     REPEATED_REQUESTS(900, "重复请求，请稍后重试"),
     DEMO_DENY(901, "演示模式，禁止写操作"),
-    NAME_DUPLICATION(1000,"名称重复"),
+    NAME_EXIST(1000,"名称已存在"),
     ID_NOT_EXIST(1001,"ID不存在"),
-    PHONE_DUPLICATION(1001,"手机号码重复"),
+    PHONE_EXIST(1002,"手机号码已存在"),
+    EMAIL_EXIST(1003,"邮箱已存在"),
+    USERNAME_EXIST(1003,"用户名已存在"),
+    FIELD_EXIST(1003,"字段已存在"),
     ;
     private final Integer code;
     private final String message;

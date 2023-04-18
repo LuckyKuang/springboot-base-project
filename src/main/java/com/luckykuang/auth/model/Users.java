@@ -37,12 +37,16 @@ public class Users extends BaseParams {
 
     @NotBlank
     @Column(nullable = false, length = 128)
+    private String name;
+
+    @NotBlank
+    @Column(nullable = false, length = 128)
     private String username;
 
     @NotBlank
     @Column(nullable = false, length = 128)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String passwd;
+    private String password;
 
     @Email
     @Column(length = 128)

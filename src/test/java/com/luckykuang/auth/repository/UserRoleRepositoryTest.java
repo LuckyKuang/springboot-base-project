@@ -1,6 +1,8 @@
 package com.luckykuang.auth.repository;
 
+import com.luckykuang.auth.constant.ErrorCodeEnum;
 import com.luckykuang.auth.constant.UserStatusEnum;
+import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Roles;
 import com.luckykuang.auth.model.UserRole;
 import com.luckykuang.auth.model.UserRoleId;
@@ -13,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  * @author luckykuang
@@ -44,25 +45,27 @@ class UserRoleRepositoryTest {
         roles.setDescription("xxx");
         roles.setParentId(0L);
         roles.setTreeKey("xxx");
+        roles.setTenantId("admin");
         roles.setTreeLevel(1);
         roles.setCreateBy(1L);
         roles.setUpdateBy(1L);
         roles.setCreateTime(LocalDateTime.now());
         roles.setUpdateTime(LocalDateTime.now());
+        roleRepository.save(roles);
 
         Users users = new Users();
         users.setUsername("xxx");
-        users.setPasswd("xxx");
-        users.setEmail("xxx");
-        users.setPhone("xxx");
+        users.setPassword("xxx");
+        users.setEmail("xxx@gmail.com");
+        users.setPhone("13011112222");
         users.setUserStatus(UserStatusEnum.ACTIVE);
         users.setId(1L);
-        users.setTenantId("xxx");
+        users.setTenantId("admin");
         users.setCreateBy(1L);
         users.setUpdateBy(1L);
         users.setCreateTime(LocalDateTime.now());
         users.setUpdateTime(LocalDateTime.now());
-
+        userRepository.save(users);
 
         UserRole userRole = new UserRole();
         UserRoleId id = new UserRoleId();
@@ -82,10 +85,11 @@ class UserRoleRepositoryTest {
     }
 
     @Test
-    void findUserRoleById() {
-        UserRoleId id = new UserRoleId();
-        id.setUserId(1L);
-        Optional<UserRole> role = userRoleRepository.findUserRoleById(id);
-        Assertions.assertEquals(role.get().getId().getRoleId(), 1);
+    void findUserRoleByUserRoleFk() {
+        Users users = userRepository.findById(1L)
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));;
+        UserRole userRole = userRoleRepository.findUserRoleByUserRoleFk(users)
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
+        Assertions.assertEquals(1, userRole.getId().getRoleId());
     }
 }

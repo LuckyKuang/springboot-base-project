@@ -45,9 +45,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users insertUser(Users users) {
         Optional<Users> usersOptional = userRepository.findByUsername(users.getUsername());
-        AssertUtils.isTrue(usersOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        AssertUtils.isTrue(usersOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
         Optional<Users> byPhone = userRepository.findByPhone(users.getPhone());
-        AssertUtils.isTrue(byPhone.isEmpty(),ErrorCodeEnum.PHONE_DUPLICATION);
+        AssertUtils.isTrue(byPhone.isEmpty(),ErrorCodeEnum.PHONE_EXIST);
 
         return userRepository.save(users);
     }
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         Optional<Users> repositoryById = userRepository.findById(users.getId());
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
         Optional<Users> usersOptional = userRepository.findByIdIsNotAndUsername(users.getId(), users.getUsername());
-        AssertUtils.isTrue(usersOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        AssertUtils.isTrue(usersOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
 
         return userRepository.save(users);
     }

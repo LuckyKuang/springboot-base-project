@@ -1,6 +1,7 @@
 package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
+import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Permissions;
 import com.luckykuang.auth.model.RolePermission;
 import com.luckykuang.auth.model.RolePermissionId;
@@ -52,7 +53,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public Permissions insertPermission(Permissions permissions) {
         Optional<Permissions> permissionsOptional = permissionRepository.findByPermissionName(permissions.getPermissionName());
-        AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
 
         return permissionRepository.save(permissions);
     }
@@ -63,7 +64,7 @@ public class PermissionServiceImpl implements PermissionService {
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
         Optional<Permissions> permissionsOptional = permissionRepository
                 .findByIdIsNotAndPermissionName(permissions.getId(), permissions.getPermissionName());
-        AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
 
         return permissionRepository.save(permissions);
     }
@@ -75,14 +76,15 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public RolePermission authRolePermission(RolePermissionId rolePermissionId) {
-        Optional<Permissions> permissions = permissionRepository.findById(rolePermissionId.getPermissionId());
-        Optional<Roles> roles = roleRepository.findById(rolePermissionId.getRoleId());
-        AssertUtils.isTrue(permissions.isPresent() && roles.isPresent(),ErrorCodeEnum.BAD_REQUEST);
+        Permissions permissions = permissionRepository.findById(rolePermissionId.getPermissionId())
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
+        Roles roles = roleRepository.findById(rolePermissionId.getRoleId())
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
 
         RolePermission rolePermission = new RolePermission();
         rolePermission.setId(rolePermissionId);
-        rolePermission.setRolePermissionFk(roles.get());
-        rolePermission.setPermissionRoleFk(permissions.get());
+        rolePermission.setRolePermissionFk(roles);
+        rolePermission.setPermissionRoleFk(permissions);
         return rolePermissionRepository.save(rolePermission);
     }
 }

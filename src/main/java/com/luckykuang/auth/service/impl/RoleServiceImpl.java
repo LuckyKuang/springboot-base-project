@@ -1,6 +1,7 @@
 package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
+import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Roles;
 import com.luckykuang.auth.model.UserRole;
 import com.luckykuang.auth.model.UserRoleId;
@@ -51,8 +52,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Roles insertRole(Roles roles) {
-        Optional<Roles> rolesOptional = roleRepository.findByRoleName(roles.getRoleName());
-        AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        Optional<Roles> rolesOptional = roleRepository.findByRoleField(roles.getRoleField());
+        AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.FIELD_EXIST);
 
         return roleRepository.save(roles);
     }
@@ -62,7 +63,7 @@ public class RoleServiceImpl implements RoleService {
         Optional<Roles> repositoryById = roleRepository.findById(roles.getId());
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
         Optional<Roles> rolesOptional = roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName());
-        AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.NAME_DUPLICATION);
+        AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
 
         return roleRepository.save(roles);
     }
@@ -74,14 +75,15 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public UserRole authUserRole(UserRoleId userRoleId) {
-        Optional<Users> users = userRepository.findById(userRoleId.getUserId());
-        Optional<Roles> roles = roleRepository.findById(userRoleId.getRoleId());
-        AssertUtils.isTrue(users.isPresent() && roles.isPresent(),ErrorCodeEnum.BAD_REQUEST);
+        Users users = userRepository.findById(userRoleId.getUserId())
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
+        Roles roles = roleRepository.findById(userRoleId.getRoleId())
+                .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
 
         UserRole userRole = new UserRole();
         userRole.setId(userRoleId);
-        userRole.setUserRoleFk(users.get());
-        userRole.setRoleUserFk(roles.get());
+        userRole.setUserRoleFk(users);
+        userRole.setRoleUserFk(roles);
         return userRoleRepository.save(userRole);
     }
 }

@@ -2,6 +2,7 @@ package com.luckykuang.auth.repository;
 
 import com.luckykuang.auth.model.UserRole;
 import com.luckykuang.auth.model.UserRoleId;
+import com.luckykuang.auth.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +14,5 @@ import java.util.Optional;
  */
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, UserRoleId> {
-    Optional<UserRole> findUserRoleById(UserRoleId id);
+    Optional<UserRole> findUserRoleByUserRoleFk(Users userRoleFk);
 }

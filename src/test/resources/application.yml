@@ -19,6 +19,8 @@ spring:
         #dialect: org.hibernate.dialect.MySQL8Dialect
         # 格式化sql语句
         format_sql: true
+        multiTenancy: DATABASE
+        tenant_identifier_resolver: com.luckykuang.auth.config.TenantIdentifierResolver
 logging:
   level:
     # 用于查看传入的参数
