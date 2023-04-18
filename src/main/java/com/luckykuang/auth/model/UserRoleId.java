@@ -1,5 +1,6 @@
 package com.luckykuang.auth.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
@@ -22,8 +23,10 @@ public class UserRoleId implements Serializable {
     private static final long serialVersionUID = 2989414605960746280L;
 
     @Column(name = "user_id")
+    @Schema(title = "用户id")
     private Long userId;
 
     @Column(name = "role_id")
+    @Schema(title = "角色id")
     private Long roleId;
 }

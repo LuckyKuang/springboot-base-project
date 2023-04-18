@@ -1,6 +1,7 @@
 package com.luckykuang.auth.utils;
 
 import com.luckykuang.auth.constant.ErrorCodeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,14 +19,17 @@ public class ApiResult<T> {
     /**
      * 错误码
      */
+    @Schema(title = "错误码")
     private Integer code;
     /**
      * 错误提示，用户可阅读
      */
+    @Schema(title = "错误提示")
     private String message;
     /**
      * 返回数据
      */
+    @Schema(title = "返回数据")
     private T data;
 
     public static <T> ApiResult<T> success(){

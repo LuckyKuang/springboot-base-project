@@ -45,7 +45,7 @@ class UserRoleRepositoryTest {
         roles.setDescription("xxx");
         roles.setParentId(0L);
         roles.setTreeKey("xxx");
-        roles.setTenantId("admin");
+        roles.setTenantId("unknown");
         roles.setTreeLevel(1);
         roles.setCreateBy(1L);
         roles.setUpdateBy(1L);
@@ -54,13 +54,14 @@ class UserRoleRepositoryTest {
         roleRepository.save(roles);
 
         Users users = new Users();
+        users.setName("xxx");
         users.setUsername("xxx");
         users.setPassword("xxx");
         users.setEmail("xxx@gmail.com");
         users.setPhone("13011112222");
         users.setUserStatus(UserStatusEnum.ACTIVE);
         users.setId(1L);
-        users.setTenantId("admin");
+        users.setTenantId("unknown");
         users.setCreateBy(1L);
         users.setUpdateBy(1L);
         users.setCreateTime(LocalDateTime.now());

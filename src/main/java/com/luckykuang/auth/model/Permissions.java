@@ -1,6 +1,7 @@
 package com.luckykuang.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -28,12 +29,15 @@ public class Permissions extends BaseParams {
 
     @NotBlank
     @Column(nullable = false, length = 32)
+    @Schema(title = "权限字段")
     private String permissionField;
 
     @NotBlank
     @Column(nullable = false, length = 128)
+    @Schema(title = "权限名称")
     private String permissionName;
 
+    @Schema(title = "描述")
     private String description;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -41,5 +45,6 @@ public class Permissions extends BaseParams {
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             mappedBy = "permissionRoleFk"
     )
+    @Schema(hidden = true)
     private List<RolePermission> rolePermissions = new ArrayList<>();
 }

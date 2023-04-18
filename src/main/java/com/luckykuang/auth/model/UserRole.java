@@ -1,6 +1,7 @@
 package com.luckykuang.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class UserRole {
                     name = "ky_auth_user_role_fk"
             )
     )
+    @Schema(hidden = true)
     private Users userRoleFk;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -43,5 +45,6 @@ public class UserRole {
                     name = "ky_auth_role_user_fk"
             )
     )
+    @Schema(hidden = true)
     private Roles roleUserFk;
 }

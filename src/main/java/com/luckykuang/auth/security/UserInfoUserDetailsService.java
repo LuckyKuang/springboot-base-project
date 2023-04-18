@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class UserInfoUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -36,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new BusinessException(ErrorCodeEnum.FORBIDDEN));
         UserRole userRole = userRoleRepository.findUserRoleByUserRoleFk(users)
                 .orElseThrow(() -> new BusinessException(ErrorCodeEnum.FORBIDDEN));
-        return new LoginUser(
+        return new UserInfoUserDetails(
                 users.getUsername(),
                 users.getPassword(),
                 getGrantedAuthorities(userRole.getUserRoleFk().getId()),

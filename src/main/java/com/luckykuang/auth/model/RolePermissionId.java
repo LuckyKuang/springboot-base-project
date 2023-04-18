@@ -1,5 +1,6 @@
 package com.luckykuang.auth.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
@@ -24,9 +25,11 @@ public class RolePermissionId implements Serializable {
 
     @NotNull
     @Column(name = "role_id")
+    @Schema(title = "角色id")
     private Long roleId;
 
     @NotNull
     @Column(name = "permission_id")
+    @Schema(title = "权限id")
     private Long permissionId;
 }

@@ -9,6 +9,8 @@ import java.util.Optional;
  */
 public class RequestContext {
 
+    private RequestContext(){}
+
     private static final ThreadLocal<String> currentTenant = new ThreadLocal<>();
     private static final ThreadLocal<Long> currentUser = new ThreadLocal<>();
     private static final ThreadLocal<Long> currentRole = new ThreadLocal<>();

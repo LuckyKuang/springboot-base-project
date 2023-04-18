@@ -3,6 +3,7 @@ package com.luckykuang.auth.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.constant.UserStatusEnum;
 import com.luckykuang.auth.validation.Mobile;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -37,29 +38,35 @@ public class Users extends BaseParams {
 
     @NotBlank
     @Column(nullable = false, length = 128)
+    @Schema(title = "名称")
     private String name;
 
     @NotBlank
     @Column(nullable = false, length = 128)
+    @Schema(title = "用户名")
     private String username;
 
     @NotBlank
     @Column(nullable = false, length = 128)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(title = "密码")
     private String password;
 
     @Email
     @Column(length = 128)
+    @Schema(title = "邮箱")
     private String email;
 
     @NotBlank
     @Mobile
     @Column(nullable = false, length = 32)
+    @Schema(title = "手机号码")
     private String phone;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 32)
+    @Schema(title = "用户状态")
     private UserStatusEnum userStatus;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -67,5 +74,6 @@ public class Users extends BaseParams {
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             mappedBy = "userRoleFk"
     )
+    @Schema(hidden = true)
     private List<UserRole> userRoles = new ArrayList<>();
 }

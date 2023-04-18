@@ -1,5 +1,6 @@
 package com.luckykuang.auth.utils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.luckykuang.auth.constant.ErrorCodeEnum;
 import com.luckykuang.auth.exception.BusinessException;
@@ -34,7 +35,8 @@ public class CommonUtils {
             if (param == null || "".equals(param) ||
                     (param instanceof Character character && Character.isSpaceChar(character)) ||
                     (param instanceof JsonObject jsonObject && jsonObject.size() == 0) ||
-                    (param instanceof List && ((List<?>) param).isEmpty())){
+                    (param instanceof JsonArray jsonArray && jsonArray.size() == 0) ||
+                    (param instanceof List<?> list && list.isEmpty())){
                 return true;
             }
         }
