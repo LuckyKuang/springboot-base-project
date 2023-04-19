@@ -7,23 +7,23 @@ import com.luckykuang.auth.repository.UserRepository;
 import com.luckykuang.auth.repository.UserRoleRepository;
 import com.luckykuang.auth.utils.PageUtils;
 import com.luckykuang.auth.vo.PageVo;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * @author luckykuang
@@ -36,12 +36,14 @@ class RoleServiceImplTest {
     @Mock private RoleRepository roleRepository;
     @Mock private UserRepository userRepository;
     @Mock private UserRoleRepository userRoleRepository;
+
+    @InjectMocks
     private RoleServiceImpl service;
 
-    @BeforeEach
-    void setUp() {
-        service = new RoleServiceImpl(roleRepository,userRepository,userRoleRepository);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        service = new RoleServiceImpl(roleRepository,userRepository,userRoleRepository);
+//    }
 
     @Test
     void queryRolesByPage() {
@@ -68,20 +70,7 @@ class RoleServiceImplTest {
 
     @Test
     void insertRole() {
-        Roles roles = new Roles();
-        roles.setId(1L);
-        roles.setRoleField("xxx");
-        roles.setRoleName("xxx");
-        roles.setDescription("xxx");
-        roles.setParentId(0L);
-        roles.setTreeKey("xxx");
-        roles.setTenantId("tenant");
-        roles.setTreeLevel(1);
-        roles.setCreateBy(1L);
-        roles.setUpdateBy(1L);
-        roles.setTenantId("tenant");
-        roles.setCreateTime(LocalDateTime.now());
-        roles.setUpdateTime(LocalDateTime.now());
+        Roles roles = getRoles();
 
         service.insertRole(roles);
 
@@ -92,39 +81,21 @@ class RoleServiceImplTest {
         assertThat(captorValue).isEqualTo(roles);
     }
 
-//    @Test
-//    void updateRole() {
-//        Roles roles = new Roles();
-//        roles.setId(1L);
-//        roles.setRoleField("xxx");
-//        roles.setRoleName("xxx");
-//        roles.setDescription("xxx");
-//        roles.setParentId(0L);
-//        roles.setTreeKey("xxx");
-//        roles.setTenantId("tenant");
-//        roles.setTreeLevel(1);
-//        roles.setCreateBy(1L);
-//        roles.setUpdateBy(1L);
-//        roles.setTenantId("tenant");
-//        roles.setCreateTime(LocalDateTime.now());
-//        roles.setUpdateTime(LocalDateTime.now());
-//
-//        service.insertRole(roles);
-//
-//        boolean present = roleRepository.findById(roles.getId()).isPresent();
-//        given(present).willReturn(true);
-//
-//        boolean empty = roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName()).isEmpty();
-//        given(empty).willReturn(false);
-//
-//        service.updateRole(roles);
-//
-//        ArgumentCaptor<Roles> rolesArgumentCaptor = ArgumentCaptor.forClass(Roles.class);
-//        verify(roleRepository).save(rolesArgumentCaptor.capture());
-//
-//        Roles captorValue = rolesArgumentCaptor.getValue();
-//        assertThat(captorValue).isEqualTo(roles);
-//    }
+    @Test
+    void updateRole() {
+        Roles roles = getRoles();
+
+        when(roleRepository.findById(roles.getId())).thenReturn(Optional.of(roles));
+        when(roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName())).thenReturn(Optional.empty());
+
+        service.updateRole(roles);
+
+        ArgumentCaptor<Roles> rolesArgumentCaptor = ArgumentCaptor.forClass(Roles.class);
+        verify(roleRepository).save(rolesArgumentCaptor.capture());
+
+        Roles captorValue = rolesArgumentCaptor.getValue();
+        assertThat(captorValue).isEqualTo(roles);
+    }
 
     @Test
     void deleteRole() {
@@ -149,7 +120,21 @@ class RoleServiceImplTest {
         verify(roleRepository, never()).deleteById(any());
     }
 
-    @Test
-    void authUserRole() {
+    private Roles getRoles() {
+        Roles roles = new Roles();
+        roles.setId(1L);
+        roles.setRoleField("xxx");
+        roles.setRoleName("xxx");
+        roles.setDescription("xxx");
+        roles.setParentId(0L);
+        roles.setTreeKey("xxx");
+        roles.setTenantId("tenant");
+        roles.setTreeLevel(1);
+        roles.setCreateBy(1L);
+        roles.setUpdateBy(1L);
+        roles.setTenantId("tenant");
+        roles.setCreateTime(LocalDateTime.now());
+        roles.setUpdateTime(LocalDateTime.now());
+        return roles;
     }
 }
