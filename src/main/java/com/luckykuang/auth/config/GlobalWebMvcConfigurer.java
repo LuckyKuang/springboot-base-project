@@ -17,8 +17,6 @@ import java.util.List;
 public class GlobalWebMvcConfigurer implements WebMvcConfigurer {
 
     private static final List<String> EXCLUDE_PATH_PATTERNS = new ArrayList<>(Arrays.asList(
-            "/auth/v1/sign/signIn",
-            "/auth/v1/sign/signOn",
             "/v3/api-docs/**",
             "/swagger-ui/**"
     ));

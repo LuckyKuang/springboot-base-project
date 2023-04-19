@@ -57,7 +57,6 @@ public class SignServiceImpl implements SignService {
         AssertUtils.isTrue(!userRepository.existsByEmail(sign.email()), ErrorCodeEnum.EMAIL_EXIST);
         AssertUtils.isTrue(!userRepository.existsByPhone(sign.phone()), ErrorCodeEnum.PHONE_EXIST);
 
-        String tenantId = "tenant";
         Users users = new Users();
         users.setName(sign.name());
         users.setUsername(sign.username());
@@ -65,12 +64,11 @@ public class SignServiceImpl implements SignService {
         users.setEmail(sign.email());
         users.setPhone(sign.phone());
         users.setUserStatus(UserStatusEnum.ACTIVE);
-        users.setTenantId(tenantId);
         users.setCreateBy(1L);
         users.setUpdateBy(1L);
         Users user = userRepository.save(users);
 
-        Roles role = roleRepository.findByRoleField(tenantId)
+        Roles role = roleRepository.findRolesByRoleField(user.getTenantId())
                 .orElseThrow(() -> new BusinessException(ErrorCodeEnum.INTERNAL_SERVER_ERROR));
         UserRoleId userRoleId = new UserRoleId();
         userRoleId.setRoleId(role.getId());

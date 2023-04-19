@@ -15,11 +15,22 @@ import java.util.Map;
 @Component
 public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver, HibernatePropertiesCustomizer {
 
-    public static final String DEFAULT_TENANT = "unknown";
+    private static String DEFAULT_TENANT = "tenant";// unknown
+    private static final String ADMIN_TENANT = "admin";
+
+    public static void setTenant(String tenant){
+        DEFAULT_TENANT = tenant;
+    }
 
     @Override
     public String resolveCurrentTenantIdentifier() {
-        return RequestContext.getTenantId().orElse(DEFAULT_TENANT);
+        String tenantId = RequestContext.getTenantId().orElse(DEFAULT_TENANT);
+        // TODO 后期存入缓存
+//        List<String> roleFields = new ArrayList<>(Arrays.asList("admin","tenant","operator","employee"));
+//        if (!roleFields.isEmpty() && !roleFields.contains(tenantId)){
+//            tenantId = defaultTenant;
+//        }
+        return ADMIN_TENANT.equals(tenantId) ? DEFAULT_TENANT : tenantId;
     }
 
     @Override

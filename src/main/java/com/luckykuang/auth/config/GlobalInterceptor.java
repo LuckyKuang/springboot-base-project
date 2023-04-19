@@ -1,6 +1,5 @@
 package com.luckykuang.auth.config;
 
-import com.luckykuang.auth.utils.CommonUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -31,10 +30,10 @@ public class GlobalInterceptor implements HandlerInterceptor {
         // TODO 后期国际化/token加密
         String language = request.getHeader(REQUEST_HEADER_LANGUAGE);
         String token = request.getHeader(REQUEST_HEADER_AUTHORIZATION);
-        if (CommonUtils.isEmpty(tenantId,userId,roleId)){
-            // TODO
-            return false;
-        }
+//        if (CommonUtils.isEmpty(tenantId,userId,roleId)){
+//            // TODO
+//            return false;
+//        }
         RequestContext.setTenantId(tenantId);
         RequestContext.setUserId(userId);
         RequestContext.setRoleId(roleId);

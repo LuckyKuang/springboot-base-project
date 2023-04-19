@@ -52,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Roles insertRole(Roles roles) {
-        Optional<Roles> rolesOptional = roleRepository.findByRoleField(roles.getRoleField());
+        Optional<Roles> rolesOptional = roleRepository.findRolesByRoleField(roles.getRoleField());
         AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.FIELD_EXIST);
 
         return roleRepository.save(roles);
@@ -60,16 +60,18 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Roles updateRole(Roles roles) {
-        Optional<Roles> repositoryById = roleRepository.findById(roles.getId());
-        AssertUtils.isTrue(repositoryById.isPresent(), ErrorCodeEnum.ID_NOT_EXIST);
-        Optional<Roles> rolesOptional = roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName());
-        AssertUtils.isTrue(rolesOptional.isEmpty(), ErrorCodeEnum.NAME_EXIST);
+        boolean present = roleRepository.findById(roles.getId()).isPresent();
+        AssertUtils.isTrue(present, ErrorCodeEnum.ID_NOT_EXIST);
+        boolean empty = roleRepository.findByIdIsNotAndRoleName(roles.getId(), roles.getRoleName()).isEmpty();
+        AssertUtils.isTrue(empty, ErrorCodeEnum.NAME_EXIST);
 
         return roleRepository.save(roles);
     }
 
     @Override
     public void deleteRole(Long roleId) {
+        boolean existsById = roleRepository.existsById(roleId);
+        AssertUtils.isTrue(!existsById, ErrorCodeEnum.BAD_REQUEST);
         roleRepository.deleteById(roleId);
     }
 

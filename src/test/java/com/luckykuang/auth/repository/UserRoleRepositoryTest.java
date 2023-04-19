@@ -8,13 +8,14 @@ import com.luckykuang.auth.model.UserRole;
 import com.luckykuang.auth.model.UserRoleId;
 import com.luckykuang.auth.model.Users;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author luckykuang
@@ -45,7 +46,7 @@ class UserRoleRepositoryTest {
         roles.setDescription("xxx");
         roles.setParentId(0L);
         roles.setTreeKey("xxx");
-        roles.setTenantId("unknown");
+        roles.setTenantId("tenant");
         roles.setTreeLevel(1);
         roles.setCreateBy(1L);
         roles.setUpdateBy(1L);
@@ -61,7 +62,7 @@ class UserRoleRepositoryTest {
         users.setPhone("13011112222");
         users.setUserStatus(UserStatusEnum.ACTIVE);
         users.setId(1L);
-        users.setTenantId("unknown");
+        users.setTenantId("tenant");
         users.setCreateBy(1L);
         users.setUpdateBy(1L);
         users.setCreateTime(LocalDateTime.now());
@@ -91,6 +92,7 @@ class UserRoleRepositoryTest {
                 .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));;
         UserRole userRole = userRoleRepository.findUserRoleByUserRoleFk(users)
                 .orElseThrow(() -> new BusinessException(ErrorCodeEnum.BAD_REQUEST));
-        Assertions.assertEquals(1, userRole.getId().getRoleId());
+        Long roleId = 1L;
+        assertEquals(roleId, userRole.getId().getRoleId());
     }
 }
