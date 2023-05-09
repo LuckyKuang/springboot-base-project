@@ -1,17 +1,33 @@
+/*
+ * Copyright 2015-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.luckykuang.auth.utils;
 
-import com.luckykuang.auth.constant.ErrorCodeEnum;
+import com.luckykuang.auth.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
 /**
- * 断言类
+ * 断言工具类
  * @author luckykuang
- * @date 2023/4/10 20:49
+ * @date 2023/4/21 15:10
  */
-public class AssertUtils {
+public final class AssertUtils {
 
     private AssertUtils(){}
 
@@ -20,11 +36,11 @@ public class AssertUtils {
      * <p>为 false 则抛出异常</p>
      *
      * @param expression    boolean 值
-     * @param errorCodeEnum     错误消息
+     * @param errorCode     错误消息
      */
-    public static void isTrue(boolean expression, ErrorCodeEnum errorCodeEnum) {
+    public static void isTrue(boolean expression, ErrorCode errorCode) {
         if (!expression) {
-            throw new BusinessException(errorCodeEnum);
+            throw new BusinessException(errorCode);
         }
     }
 
@@ -33,10 +49,10 @@ public class AssertUtils {
      * <p>为 true 则抛出异常</p>
      *
      * @param expression    boolean 值
-     * @param errorCodeEnum     错误消息
+     * @param errorCode     错误消息
      */
-    public static void isFalse(boolean expression, ErrorCodeEnum errorCodeEnum) {
-        isTrue(!expression, errorCodeEnum);
+    public static void isFalse(boolean expression, ErrorCode errorCode) {
+        isTrue(!expression, errorCode);
     }
 
     /**
@@ -44,10 +60,10 @@ public class AssertUtils {
      * <p>不为 null 则抛异常</p>
      *
      * @param object     对象
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void isNull(Object object, ErrorCodeEnum errorCodeEnum) {
-        isTrue(object == null, errorCodeEnum);
+    public static void isNull(Object object, ErrorCode errorCode) {
+        isTrue(object == null, errorCode);
     }
 
     /**
@@ -55,10 +71,10 @@ public class AssertUtils {
      * <p>为 null 则抛异常</p>
      *
      * @param object     对象
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void notNull(Object object, ErrorCodeEnum errorCodeEnum) {
-        isTrue(object != null, errorCodeEnum);
+    public static void notNull(Object object, ErrorCode errorCode) {
+        isTrue(object != null, errorCode);
     }
 
     /**
@@ -66,10 +82,10 @@ public class AssertUtils {
      * <p>为 empty 则抛异常</p>
      *
      * @param value      字符串
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void notEmpty(String value, ErrorCodeEnum errorCodeEnum) {
-        isTrue(StringUtils.isNotBlank(value), errorCodeEnum);
+    public static void notEmpty(String value, ErrorCode errorCode) {
+        isTrue(StringUtils.isNotBlank(value), errorCode);
     }
 
     /**
@@ -77,10 +93,10 @@ public class AssertUtils {
      * <p>为 empty 则抛异常</p>
      *
      * @param map        集合
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void notEmpty(Map<?, ?> map, ErrorCodeEnum errorCodeEnum) {
-        isTrue(map != null && !map.isEmpty(), errorCodeEnum);
+    public static void notEmpty(Map<?, ?> map, ErrorCode errorCode) {
+        isTrue(map != null && !map.isEmpty(), errorCode);
     }
 
     /**
@@ -88,10 +104,10 @@ public class AssertUtils {
      * <p>为 empty 则抛异常</p>
      *
      * @param map        集合
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void isEmpty(Map<?, ?> map, ErrorCodeEnum errorCodeEnum) {
-        isTrue(map == null || map.isEmpty(), errorCodeEnum);
+    public static void isEmpty(Map<?, ?> map, ErrorCode errorCode) {
+        isTrue(map == null || map.isEmpty(), errorCode);
     }
 
     /**
@@ -99,9 +115,9 @@ public class AssertUtils {
      * <p>为 empty 则抛异常</p>
      *
      * @param array      数组
-     * @param errorCodeEnum  错误消息
+     * @param errorCode  错误消息
      */
-    public static void notEmpty(Object[] array, ErrorCodeEnum errorCodeEnum) {
-        isTrue(array != null && array.length > 0, errorCodeEnum);
+    public static void notEmpty(Object[] array, ErrorCode errorCode) {
+        isTrue(array != null && array.length > 0, errorCode);
     }
 }

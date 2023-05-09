@@ -1,29 +1,45 @@
+/*
+ * Copyright 2015-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.luckykuang.auth.controller;
 
-import com.luckykuang.auth.model.Permissions;
-import com.luckykuang.auth.model.RolePermission;
-import com.luckykuang.auth.model.RolePermissionId;
+import com.luckykuang.auth.base.ApiResult;
+import com.luckykuang.auth.model.Permission;
+import com.luckykuang.auth.record.PermissionRec;
 import com.luckykuang.auth.service.PermissionService;
-import com.luckykuang.auth.utils.ApiResult;
+import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author luckykuang
  * @date 2023/4/11 16:35
  */
-@Tag(name = "PermissionController", description = "权限")
+@Tag(name = "权限 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("auth/v1/permission")
+@PreAuthorize("hasRole('ADMIN')")
 public class PermissionController {
 
     private final PermissionService permissionService;
@@ -31,45 +47,39 @@ public class PermissionController {
 
     @Operation(summary = "分页查询权限列表")
     @GetMapping("page")
-    public ApiResult<Page<Permissions>> queryPermissionsByPage(PageVo page){
-        return ApiResult.success(permissionService.queryPermissionsByPage(page));
+    public ApiResult<PageResultVo<Permission>> getPermissionsByPage(PageVo page){
+        return ApiResult.success(permissionService.getPermissionsByPage(page));
     }
 
     @Operation(summary = "查询权限列表")
     @GetMapping
-    public ApiResult<List<Permissions>> queryPermissions(){
-        return ApiResult.success(permissionService.queryPermissions());
+    public ApiResult<List<Permission>> getPermissions(){
+        return ApiResult.success(permissionService.getPermissions());
     }
 
     @Operation(summary = "通过id查询权限")
     @GetMapping("{permissionId}")
-    public ApiResult<Optional<Permissions>> queryPermissionById(@PathVariable("permissionId") Long permissionId){
-        return ApiResult.success(permissionService.queryPermissionById(permissionId));
+    public ApiResult<Permission> getPermissionById(@PathVariable("permissionId") Long id){
+        return ApiResult.success(permissionService.getPermissionById(id));
     }
 
     @Operation(summary = "新增权限")
     @PostMapping
-    public ApiResult<Permissions> insertPermission(@RequestBody @Validated Permissions permissions){
-        return ApiResult.success(permissionService.insertPermission(permissions));
+    public ApiResult<Permission> addPermission(@RequestBody @Validated PermissionRec permissionRec){
+        return ApiResult.success(permissionService.addPermission(permissionRec));
     }
 
     @Operation(summary = "更新权限")
-    @PutMapping
-    public ApiResult<Permissions> updatePermission(@RequestBody @Validated Permissions permissions){
-        return ApiResult.success(permissionService.updatePermission(permissions));
+    @PutMapping("{permissionId}")
+    public ApiResult<Permission> updatePermission(@PathVariable("permissionId") Long id,
+                                                  @RequestBody @Validated PermissionRec permissionRec){
+        return ApiResult.success(permissionService.updatePermission(id, permissionRec));
     }
 
     @Operation(summary = "删除权限")
     @DeleteMapping("{permissionId}")
-    public ApiResult<Void> deletePermission(@PathVariable("permissionId") Long permissionId){
-        permissionService.deletePermission(permissionId);
-        return ApiResult.success();
+    public ApiResult<Long> delPermission(@PathVariable("permissionId") Long id){
+        permissionService.delPermission(id);
+        return ApiResult.success(id);
     }
-
-    @Operation(summary = "授予角色权限")
-    @PostMapping("authRolePermission")
-    public ApiResult<RolePermission> authRolePermission(@RequestBody RolePermissionId rolePermissionId){
-        return ApiResult.success(permissionService.authRolePermission(rolePermissionId));
-    }
-
 }

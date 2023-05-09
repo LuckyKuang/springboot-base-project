@@ -1,12 +1,6 @@
 package com.luckykuang.auth.repository;
 
-import com.luckykuang.auth.constant.ErrorCodeEnum;
-import com.luckykuang.auth.constant.UserStatusEnum;
-import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Roles;
-import com.luckykuang.auth.model.UserRole;
-import com.luckykuang.auth.model.UserRoleId;
-import com.luckykuang.auth.model.Users;
+import com.luckykuang.auth.enums.UserStatusEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

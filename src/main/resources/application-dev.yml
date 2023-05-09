@@ -1,0 +1,84 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/base-project?characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      # Redis数据库索引（默认为0）
+      database: 0
+      host: localhost
+      port: 6379
+      password:
+      lettuce:
+        pool:
+          # 连接池最大连接数（使用负值表示没有限制） 默认 8
+          max-active: 8
+          # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+          max-wait: -1
+          # 连接池中的最大空闲连接 默认 8
+          max-idle: 8
+          # 连接池中的最小空闲连接 默认 0
+          min-idle: 0
+  jpa:
+    # 避免启动时在日志中会出现警告
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    # 显示sql语句
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        # 格式化sql语句
+        format_sql: true
+
+## App Properties
+app:
+  # jwt 加密盐
+  jwt-secret: luckykuang
+  # jwt 过期时间(ms)
+  jwt-expiration:
+    access-token-milliseconds: 300000
+    refresh-token-milliseconds: 600000
+  # 跨域url配置，配置多个用英文逗号分割
+  cors-urls: http://localhost:8080
+  # 跨域方法配置，配置多个用英文逗号分割
+  cors-methods: GET,POST,PUT,DELETE
+
+logging:
+  level:
+    com.luckykuang: info
+    # 用于日志监控
+    com.luckykuang.auth.controller: trace
+    # 用于查看传入的参数
+    # 基本类型绑定
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    # 枚举类型绑定
+    org.hibernate.metamodel.model.convert.internal.NamedEnumValueConverter: trace
+
+# spring doc 配置
+springdoc:
+  api-docs:
+    # true - 开启API文档功能，false - 关闭API文档功能
+    enabled: true
+  swagger-ui:
+    enabled: true
+    # “list”（仅展开标记）、“full”（展开标记和操作）、“none”（不展开任何内容）。
+    docExpansion: none
+    # “alpha”（按路径字母数字排序），“method”（按HTTP方法排序）
+    operationsSorter: method
+  # GET请求下，让swagger将DTO封装入参解析成form参数
+  default-flat-param-object: true
+knife4j:
+  # 开启增强功能
+  enable: true
+  setting:
+    language: zh_cn

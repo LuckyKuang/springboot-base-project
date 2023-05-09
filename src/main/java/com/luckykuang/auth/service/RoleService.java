@@ -1,31 +1,42 @@
+/*
+ * Copyright 2015-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.luckykuang.auth.service;
 
-import com.luckykuang.auth.model.Roles;
-import com.luckykuang.auth.model.UserRole;
-import com.luckykuang.auth.model.UserRoleId;
+import com.luckykuang.auth.model.Role;
+import com.luckykuang.auth.record.RoleRec;
+import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author luckykuang
- * @date 2023/4/11 16:36
+ * @date 2023/4/20 14:19
  */
 public interface RoleService {
+    Role addRole(RoleRec roleRec);
 
-    Page<Roles> queryRolesByPage(PageVo page);
+    Role getRoleById(Long id);
 
-    List<Roles> queryRoles();
+    List<Role> getRoles();
 
-    Optional<Roles> queryRoleById(Long roleId);
+    PageResultVo<Role> getRolesByPage(PageVo page);
 
-    Roles insertRole(Roles roles);
+    Role updateRole(Long id, RoleRec roleRec);
 
-    Roles updateRole(Roles roles);
-
-    void deleteRole(Long roleId);
-
-    UserRole authUserRole(UserRoleId userRoleId);
+    void delRole(Long id);
 }
