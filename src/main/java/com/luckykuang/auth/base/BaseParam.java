@@ -16,7 +16,6 @@
 
 package com.luckykuang.auth.base;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -64,13 +63,11 @@ public class BaseParam implements Serializable {
 
     @CreatedDate
     @Column(nullable = false, precision = 3, updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
     @LastModifiedDate
     @Column(nullable = false, precision = 3)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 }
