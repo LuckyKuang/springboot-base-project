@@ -37,7 +37,7 @@
 
 1. 找到配置文件`application-dev.yml`，配置`MySQL`和`Redis`，数据库名字自己命名一个，比如：`base-project`
 2. 找到启动类`AuthApplication`，直接启动就行了，数据库会自动生成数据库表文件
-3. 找到数据库文件`base-project.sql`，初始化一些测试数据
+3. 系统启动后，会自动执行sql，初始化一些基础数据
 4. 启动完成，浏览器[打开Knife4j文档](http://localhost:8080/doc.html)或者[打开Swagger文档](http://localhost:8080/swagger-ui/index.html)
 
 ## 账号
