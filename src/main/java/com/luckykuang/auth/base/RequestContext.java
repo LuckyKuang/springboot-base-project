@@ -28,7 +28,7 @@ public class RequestContext {
     private RequestContext(){}
 
     private static final ThreadLocal<Long> currentUserId = new ThreadLocal<>();
-    private static final ThreadLocal<Long> currentRoleId = new ThreadLocal<>();
+    private static final ThreadLocal<String> currentTokenId = new ThreadLocal<>();
 
 
     /**
@@ -46,17 +46,17 @@ public class RequestContext {
     }
 
     /**
-     * 设置 roleId
+     * 设置 token
      */
-    public static void setRoleId(Long roleId) {
-        currentRoleId.set(roleId);
+    public static void setToken(String token) {
+        currentTokenId.set(token);
     }
 
     /**
-     * 获取 roleId
+     * 获取 token
      */
-    public static Optional<Long> getRoleId() {
-        return Optional.ofNullable(currentRoleId.get());
+    public static Optional<String> getToken() {
+        return Optional.ofNullable(currentTokenId.get());
     }
 
     /**
@@ -64,6 +64,6 @@ public class RequestContext {
      */
     public static void clear() {
         currentUserId.remove();
-        currentRoleId.remove();
+        currentTokenId.remove();
     }
 }

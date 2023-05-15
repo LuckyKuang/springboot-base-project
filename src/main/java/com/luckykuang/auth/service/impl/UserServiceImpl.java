@@ -21,6 +21,7 @@ import com.luckykuang.auth.config.jwt.JwtTokenProvider;
 import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
+import com.luckykuang.auth.model.Login;
 import com.luckykuang.auth.model.Role;
 import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.record.JwtRspRec;
@@ -31,9 +32,9 @@ import com.luckykuang.auth.repository.UserRepository;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
+import com.luckykuang.auth.utils.RedisUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
-import com.luckykuang.auth.utils.RedisUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,19 +104,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtRspRec signIn(SignInRec sign) {
         SignInRec from = SignInRec.from(sign);
-        Optional<User> user = userRepository.findByUsername(from.username());
-        AssertUtils.isTrue(user.isPresent(),ErrorCode.USERNAME_NOT_EXIST);
+        User user = userRepository.findByUsername(from.username())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 from.username(),
                 from.password()
         );
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-        String accessToken = jwtTokenProvider.generateAccessToken(authenticate);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(authenticate);
+        String accessToken = jwtTokenProvider.generateAccessToken(authenticate,String.valueOf(user.getId()));
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authenticate,String.valueOf(user.getId()));
         // 加入redis缓存
         redisUtils.set(
                 RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
-                from.username(),
+                user.getId(),
                 jwtAccessTokenExpirationDate / 1000
         );
         return JwtRspRec.from(accessToken,refreshToken);
@@ -155,27 +155,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public JwtRspRec refresh(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String bearerToken = request.getHeader(AUTHORIZATION);
-        String accessToken = null;
-        String refreshToken = null;
+        String accessToken;
+        String refreshToken;
         if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
             return JwtRspRec.from(null, null);
         }
         String token = bearerToken.substring(BEARER_HEAD.length());
         String username = jwtTokenProvider.getUsername(token);
         if (username != null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            Login userDetails = userDetailsService.loadUserByUsername(username);
             if (Boolean.TRUE.equals(jwtTokenProvider.validateToken(token,userDetails))){
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
-                accessToken = jwtTokenProvider.generateAccessToken(authToken);
-                refreshToken = jwtTokenProvider.generateRefreshToken(authToken);
+                accessToken = jwtTokenProvider.generateAccessToken(authToken,String.valueOf(userDetails.getUserId()));
+                refreshToken = jwtTokenProvider.generateRefreshToken(authToken,String.valueOf(userDetails.getUserId()));
                 // 加入redis缓存
                 redisUtils.set(
                         RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
-                        username,
+                        userDetails.getUserId(),
                         jwtAccessTokenExpirationDate / 1000
                 );
                 return JwtRspRec.from(accessToken,refreshToken);

@@ -24,17 +24,23 @@ import com.luckykuang.auth.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-
-import static com.luckykuang.auth.constants.CoreConstants.AUTHORITIES;
 
 /**
+ * jwt有以下7个官方字段供选择:
+ *      iss(issuer)：签发人
+ *      exp(expiration time)：过期时间
+ *      sub(subject)：主题
+ *      aud(audience)：受众
+ *      nbf(not before)：生效时间
+ *      iat(issued at)：签发时间
+ *      jti(jwt id)：编号
+ * jwt预留自定义参数：
+ *      Claim(String name, Object value)
+ *
  * @author luckykuang
  * @date 2023/4/22 17:57
  */
@@ -50,21 +56,12 @@ public class JwtTokenProvider {
     private long jwtRefreshTokenExpirationDate;
 
     /**
-     * 生成令牌
-     * @param userName
-     * @return AccessToken
-     */
-    public String generateToken(String userName){
-        return createToken(userName,null,jwtAccessTokenExpirationDate);
-    }
-
-    /**
      * 生成验证令牌
      * @param authentication
      * @return AccessToken
      */
-    public String generateAccessToken(Authentication authentication){
-        return createToken(authentication.getName(),authentication.getAuthorities(),jwtAccessTokenExpirationDate);
+    public String generateAccessToken(Authentication authentication,String userId){
+        return createToken(authentication.getName(),jwtAccessTokenExpirationDate,userId);
     }
 
     /**
@@ -72,8 +69,17 @@ public class JwtTokenProvider {
      * @param authentication
      * @return 刷新令牌
      */
-    public String generateRefreshToken(Authentication authentication){
-        return createToken(authentication.getName(),authentication.getAuthorities(),jwtRefreshTokenExpirationDate);
+    public String generateRefreshToken(Authentication authentication,String userId){
+        return createToken(authentication.getName(),jwtRefreshTokenExpirationDate,userId);
+    }
+
+    /**
+     * 获取用户id
+     * @param token
+     * @return
+     */
+    public String getUserId(String token){
+        return getDecodedJWT(token).getIssuer();
     }
 
     /**
@@ -134,20 +140,19 @@ public class JwtTokenProvider {
         return getJwtExpirationDate(token).before(new Date());
     }
 
-    private String createToken(String userName, Collection<? extends GrantedAuthority> authorities, long jwtExpirationDate) {
+    private String createToken(String userName,
+                               long jwtExpirationDate,
+                               String userId) {
         String sign;
-        List<String> stringList = authorities == null
-                ? null
-                : authorities.stream().map(GrantedAuthority::getAuthority).toList();
         try {
             sign = JWT.create()
                     .withSubject(userName)
+                    .withIssuer(String.valueOf(userId))
                     .withIssuedAt(new Date(System.currentTimeMillis()))
                     .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationDate))
-                    .withClaim(AUTHORITIES, stringList)
                     .sign(getKey());
         } catch (JWTCreationException e){
-            log.error("令牌创建异常 -> 用户名：[{}]，权限：[{}]",userName,stringList,e);
+            log.error("令牌创建异常 -> 用户名：[{}]",userName,e);
             throw new BusinessException("令牌创建异常");
         }
         return sign;

@@ -68,7 +68,7 @@ app:
   # 跨域url配置，配置多个用英文逗号分割
   cors-urls: http://localhost:8080
   # 跨域方法配置，配置多个用英文逗号分割
-  cors-methods: GET,POST,PUT,DELETE
+  cors-methods: OPTIONS,GET,POST,PUT,DELETE
 
 logging:
   level:

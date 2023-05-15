@@ -36,6 +36,7 @@ public class Login implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = -8218935861136040887L;
+    private Long userId;
     private String username;
     private String password;
 

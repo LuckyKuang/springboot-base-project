@@ -18,10 +18,6 @@ package com.luckykuang.auth.config;
 
 import com.luckykuang.auth.base.RequestContext;
 import com.luckykuang.auth.config.jwt.JwtTokenProvider;
-import com.luckykuang.auth.enums.ErrorCode;
-import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +36,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class WebMvcHandlerInterceptor implements HandlerInterceptor {
 
-    private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -50,12 +45,9 @@ public class WebMvcHandlerInterceptor implements HandlerInterceptor {
             return false;
         }
         String token = bearerToken.substring(BEARER_HEAD.length());
-        String username = jwtTokenProvider.getUsername(token);
-        // 放入本地缓存
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
-        RequestContext.setUserId(user.getId());
-        RequestContext.setRoleId(user.getRole().getId());
+        String userId = jwtTokenProvider.getUserId(token);
+        RequestContext.setUserId(Long.valueOf(userId));
+        RequestContext.setToken(token);
         return true;
     }
 

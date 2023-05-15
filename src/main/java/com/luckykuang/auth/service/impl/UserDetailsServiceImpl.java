@@ -19,12 +19,9 @@ package com.luckykuang.auth.service.impl;
 import com.luckykuang.auth.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Login;
-import com.luckykuang.auth.model.Role;
 import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,14 +35,16 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
+    /**
+     * Login 继承于 UserDetails，故返回值可以是Login
+     * @param username 用户名
+     * @return UserDetails
+     */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public Login loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
-        Role role = roleRepository.findById(user.getRole().getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_EXIST));
-        return new Login(user.getUsername(),user.getPassword(),role);
+        return new Login(user.getId(),user.getUsername(),user.getPassword(),user.getRole());
     }
 }

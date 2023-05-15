@@ -18,6 +18,7 @@ package com.luckykuang.auth.exception;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.enums.ErrorCode;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * 全局异常处理
@@ -95,8 +98,8 @@ public class DefaultExceptionHandler {
      * 兜底所有异常处理
      */
     @ExceptionHandler(value = Exception.class)
-    public ApiResult<?> defaultExceptionHandler(Exception ex) {
-        log.error("[defaultExceptionHandler]", ex);
+    public ApiResult<?> defaultExceptionHandler(HttpServletRequest request, Exception ex) {
+        String token = request.getHeader(AUTHORIZATION);
         String name = ex.getClass().getName();
         String exceptionName = "";
         if (StringUtils.isNotBlank(name)){
@@ -104,8 +107,10 @@ public class DefaultExceptionHandler {
         }
         // security异常：拒绝访问
         if ("AccessDeniedException".equals(exceptionName)){
+            log.warn("[AccessDeniedException]:token:{},issue:{}", token, ex.getMessage());
             return ApiResult.failed(ErrorCode.FORBIDDEN);
         }
+        log.error("[defaultExceptionHandler]", ex);
         return ApiResult.failed(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 }

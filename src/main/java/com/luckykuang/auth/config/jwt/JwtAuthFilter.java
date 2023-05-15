@@ -18,7 +18,6 @@ package com.luckykuang.auth.config.jwt;
 
 import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.repository.UserRepository;
 import com.luckykuang.auth.service.impl.UserDetailsServiceImpl;
 import com.luckykuang.auth.utils.RedisUtils;
 import jakarta.servlet.FilterChain;
@@ -53,7 +52,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final UserRepository userRepository;
     private final RedisUtils redisUtils;
 
     @Override
