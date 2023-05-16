@@ -16,10 +16,27 @@
 
 package com.luckykuang.auth.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.util.StringUtils;
+
+import static com.luckykuang.auth.constants.CoreConstants.BEARER_HEAD;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 /**
  * @author fankuangyong
  * @date 2023/5/15 14:32
  */
 public class TokenUtils {
     private TokenUtils(){}
+
+    /**
+     * 将请求头的token截取返回
+     */
+    public static String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_HEAD)) {
+            return bearerToken.substring(BEARER_HEAD.length());
+        }
+        return null;
+    }
 }

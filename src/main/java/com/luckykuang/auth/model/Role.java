@@ -20,7 +20,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.base.BaseParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,10 +54,27 @@ public class Role extends BaseParam {
 
     @Serial
     private static final long serialVersionUID = -6410618731179548963L;
+
+    @NotBlank
+    @Column(nullable = false, length = 128)
+    @Schema(description = "角色编码")
+    private String code;
+
     @NotBlank
     @Column(nullable = false, length = 128)
     @Schema(description = "角色名称")
-    private String roleName;
+    private String name;
+
+    @NotNull
+    @Max(value = 99)
+    @Column(nullable = false, length = 2)
+    @Schema(description = "排序")
+    private Integer sort;
+
+    @NotNull
+    @Column(nullable = false, length = 1)
+    @Schema(description = "角色状态 1-启用 0-禁用",allowableValues = {"1","0"})
+    private Integer status;
 
     @Schema(description = "描述")
     private String description;
@@ -72,9 +91,9 @@ public class Role extends BaseParam {
     public List<SimpleGrantedAuthority> getAuthorities() {
         var authorities = getPermissions()
                 .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermissionName()))
+                .map(permission -> new SimpleGrantedAuthority(permission.getCode()))
                 .collect(Collectors.toList());
-        authorities.add(new SimpleGrantedAuthority(ROLE_UNDERLINE + this.roleName));
+        authorities.add(new SimpleGrantedAuthority(ROLE_UNDERLINE + this.code));
         return authorities;
     }
 
@@ -82,7 +101,7 @@ public class Role extends BaseParam {
     public String toString() {
         return super.toString() +
                 "Role{" +
-                "roleName='" + roleName + '\'' +
+                "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", permissions=" + permissions +
                 '}';

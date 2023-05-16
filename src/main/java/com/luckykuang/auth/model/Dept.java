@@ -22,40 +22,52 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 
 /**
- * 权限表
- * @author luckykuang
- * @date 2023/4/11 13:19
+ * 部门表
+ * @author fankuangyong
+ * @date 2023/5/16 16:26
  */
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ky_permission")
+@Table(name = "ky_dept")
 @EntityListeners(AuditingEntityListener.class)
-public class Permission extends BaseParam {
-
+public class Dept extends BaseParam {
     @Serial
-    private static final long serialVersionUID = -6450297523847090844L;
-
+    private static final long serialVersionUID = 5541309154223194494L;
     @NotBlank
     @Column(nullable = false, length = 128)
-    @Schema(description = "权限编号")
-    private String code;
-
-    @NotBlank
-    @Column(nullable = false, length = 128)
-    @Schema(description = "权限名称")
+    @Schema(description = "部门名称")
     private String name;
 
-    @Schema(description = "描述")
-    private String description;
+    @Schema(description = "部门父id")
+    private Long parentId;
+
+    @Column(length = 8)
+    @Schema(description = "部门父id路径")
+    private String treePath;
+
+    @NotNull
+    @Max(value = 99)
+    @Column(nullable = false, length = 2)
+    @Schema(description = "排序")
+    private Integer sort;
+
+    @NotNull
+    @Column(nullable = false, length = 1)
+    @Schema(description = "部门状态 1-启用 0-禁用",allowableValues = {"1","0"})
+    private Integer status;
 }

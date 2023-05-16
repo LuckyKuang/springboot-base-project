@@ -17,35 +17,25 @@
 package com.luckykuang.auth.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Optional;
 
 /**
  * 分页参数
  * @author luckykuang
  * @date 2023/4/21 11:44
  */
+@Getter
 @Setter
 public class PageVo {
     /**
-     * 当前页
+     * 当前页(Jpa是0开头，Mybatis-Plus是1开头)
      */
-    @Schema(description = "当前页",type = "Integer",defaultValue = "0")
-    private Integer current;
+    @Schema(description = "当前页",example = "0")
+    private Integer current = 0;
     /**
      * 页大小
      */
-    @Schema(description = "页大小",type = "Integer",defaultValue = "10")
-    private Integer size;
-
-    public Integer getCurrent() {
-        Integer currentNumber = Optional.ofNullable(current).orElse(0);
-        return currentNumber < 0 ? 0 : currentNumber;
-    }
-
-    public Integer getSize() {
-        Integer sizeNumber = Optional.ofNullable(size).orElse(10);
-        return sizeNumber > 0 ? sizeNumber : 1;
-    }
+    @Schema(description = "页大小",example = "10")
+    private Integer size = 10;
 }

@@ -40,17 +40,17 @@ import java.util.Optional;
  * @date 2023/4/20 14:18
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Permission addPermission(PermissionRec permissionRec) {
         PermissionRec from = PermissionRec.from(permissionRec);
         Optional<Permission> permissionsOptional = permissionRepository
-                .findByPermissionName(from.permissionName());
+                .findByCodeOrName(from.code(), from.name());
         AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCode.NAME_EXIST);
         return savePermission(null, from);
     }
@@ -72,12 +72,13 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Permission updatePermission(Long id, PermissionRec permissionRec) {
         PermissionRec from = PermissionRec.from(permissionRec);
         Optional<Permission> repositoryById = permissionRepository.findById(id);
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
         Optional<Permission> permissionsOptional = permissionRepository
-                .findByIdIsNotAndPermissionName(id, from.permissionName());
+                .findByIdIsNotAndCodeOrName(id, from.code(), from.name());
         AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCode.NAME_EXIST);
 
         return savePermission(id, from);
@@ -86,7 +87,8 @@ public class PermissionServiceImpl implements PermissionService {
     private Permission savePermission(Long id, PermissionRec permissionRec) {
         Permission permission = new Permission();
         permission.setId(id);
-        permission.setPermissionName(permissionRec.permissionName());
+        permission.setCode(permissionRec.code());
+        permission.setName(permissionRec.name());
         permission.setDescription(permissionRec.description());
         return permissionRepository.save(permission);
     }

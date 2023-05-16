@@ -23,9 +23,19 @@ import jakarta.validation.constraints.NotBlank;
  * @author luckykuang
  * @date 2023/4/21 23:00
  */
-public record PermissionRec(@NotBlank @Schema(description = "权限名称") String permissionName,
-                            @NotBlank @Schema(description = "描述") String description) {
+public record PermissionRec(@NotBlank
+                            @Schema(description = "权限编号")
+                            String code,
+                            @NotBlank
+                            @Schema(description = "权限名称")
+                            String name,
+                            @NotBlank
+                            @Schema(description = "描述")
+                            String description) {
     public static PermissionRec from(PermissionRec permissionRec){
-        return new PermissionRec(permissionRec.permissionName.toLowerCase(),permissionRec.description);
+        return new PermissionRec(
+                permissionRec.code.toLowerCase(),
+                permissionRec.name,
+                permissionRec.description);
     }
 }

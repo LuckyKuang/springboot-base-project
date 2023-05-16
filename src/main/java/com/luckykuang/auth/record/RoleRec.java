@@ -17,6 +17,7 @@
 package com.luckykuang.auth.record;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,10 +26,33 @@ import jakarta.validation.constraints.Pattern;
  * @author luckykuang
  * @date 2023/4/21 22:45
  */
-public record RoleRec(@NotBlank @Pattern(regexp = "^ROLE_(.*)", message = "必须以<ROLE_>字符开头") @Schema(description = "角色名称") String roleName,
-                      @NotBlank @Schema(description = "描述") String description,
-                      @NotNull @Schema(description = "权限id") Long permissionId) {
+public record RoleRec(@NotBlank
+                      @Pattern(regexp = "^ROLE_(.*)", message = "必须以<ROLE_>字符开头")
+                      @Schema(description = "角色编号")
+                      String code,
+                      @NotBlank
+                      @Schema(description = "角色名称")
+                      String name,
+                      @NotNull
+                      @Max(value = 99)
+                      @Schema(description = "排序")
+                      Integer sort,
+                      @NotNull
+                      @Schema(description = "角色状态 1-启用 0-禁用",allowableValues = {"1","0"})
+                      Integer status,
+                      @NotBlank
+                      @Schema(description = "描述")
+                      String description,
+                      @NotNull
+                      @Schema(description = "权限id")
+                      Long permissionId) {
     public static RoleRec from(RoleRec roleRec){
-        return new RoleRec(roleRec.roleName.toUpperCase(), roleRec.description, roleRec.permissionId);
+        return new RoleRec(
+                roleRec.code.toUpperCase(),
+                roleRec.name,
+                roleRec.sort,
+                roleRec.status,
+                roleRec.description,
+                roleRec.permissionId);
     }
 }

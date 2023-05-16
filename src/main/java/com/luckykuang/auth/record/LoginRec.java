@@ -23,10 +23,16 @@ import jakarta.validation.constraints.NotBlank;
  * @author luckykuang
  * @date 2023/4/18 16:53
  */
-public record SignInRec(
-        @NotBlank @Schema(description = "用户名") String username,
-        @NotBlank @Schema(description = "密码") String password) {
-    public static SignInRec from(SignInRec signInRec){
-        return new SignInRec(signInRec.username.toLowerCase(),signInRec.password);
+public record LoginRec(
+        @NotBlank
+        @Schema(description = "用户名")
+        String username,
+        @NotBlank
+        @Schema(description = "密码")
+        String password) {
+    public static LoginRec from(LoginRec loginRec){
+        return new LoginRec(
+                loginRec.username.toLowerCase(),
+                loginRec.password);
     }
 }

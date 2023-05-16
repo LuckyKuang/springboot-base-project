@@ -42,7 +42,6 @@ import java.util.Optional;
  * @date 2023/4/20 14:19
  */
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
@@ -50,9 +49,10 @@ public class RoleServiceImpl implements RoleService {
     private final PermissionRepository permissionRepository;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Role addRole(RoleRec roleRec) {
         RoleRec from = RoleRec.from(roleRec);
-        Optional<Role> roleOptional = roleRepository.findByRoleName(from.roleName());
+        Optional<Role> roleOptional = roleRepository.findByCodeOrName(from.code(), from.name());
         AssertUtils.isTrue(roleOptional.isEmpty(), ErrorCode.NAME_EXIST);
         return saveRole(null, from);
     }
@@ -74,11 +74,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Role updateRole(Long id, RoleRec roleRec) {
         RoleRec from = RoleRec.from(roleRec);
         Optional<Role> repositoryById = roleRepository.findById(id);
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
-        Optional<Role> roleOptional = roleRepository.findByIdIsNotAndRoleName(id, from.roleName());
+        Optional<Role> roleOptional = roleRepository.findByIdIsNotAndCodeOrName(id, from.code(), from.name());
         AssertUtils.isTrue(roleOptional.isEmpty(), ErrorCode.NAME_EXIST);
 
         return saveRole(id, from);
@@ -91,7 +92,10 @@ public class RoleServiceImpl implements RoleService {
         }
         Role role = new Role();
         role.setId(id);
-        role.setRoleName(roleRec.roleName());
+        role.setCode(roleRec.code());
+        role.setName(roleRec.name());
+        role.setSort(roleRec.sort());
+        role.setStatus(roleRec.status());
         role.setDescription(roleRec.description());
         Role save = roleRepository.save(role);
         save.getPermissions().add(permission.get());

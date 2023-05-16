@@ -18,7 +18,7 @@ package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.record.SignOnRec;
+import com.luckykuang.auth.record.UserRec;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
@@ -64,15 +64,15 @@ public class UserController {
 
     @Operation(summary = "新增用户")
     @PostMapping
-    public ApiResult<User> insertUser(@RequestBody @Validated SignOnRec sign){
-        return ApiResult.success(userService.addUser(sign));
+    public ApiResult<User> insertUser(@RequestBody @Validated UserRec userRec){
+        return ApiResult.success(userService.addUser(userRec));
     }
 
     @Operation(summary = "更新用户")
     @PutMapping("{userId}")
     public ApiResult<User> updateUser(@PathVariable("userId") Long id,
-                                      @RequestBody @Validated SignOnRec sign){
-        return ApiResult.success(userService.updateUser(id,sign));
+                                      @RequestBody @Validated UserRec userRec){
+        return ApiResult.success(userService.updateUser(id,userRec));
     }
 
     @Operation(summary = "删除用户")

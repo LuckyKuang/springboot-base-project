@@ -19,14 +19,12 @@ package com.luckykuang.auth.service;
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.record.JwtRspRec;
-import com.luckykuang.auth.record.SignInRec;
-import com.luckykuang.auth.record.SignOnRec;
+import com.luckykuang.auth.record.LoginRec;
+import com.luckykuang.auth.record.RefreshRec;
+import com.luckykuang.auth.record.UserRec;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,7 +32,7 @@ import java.util.List;
  * @date 2023/4/20 14:19
  */
 public interface UserService {
-    User addUser(SignOnRec sign);
+    User addUser(UserRec userRec);
 
     User getUserById(Long id);
 
@@ -42,15 +40,13 @@ public interface UserService {
 
     List<User> getUsers();
 
-    JwtRspRec signIn(SignInRec sign);
-
-    ApiResult<Void> signOn(SignOnRec sign);
+    ApiResult<JwtRspRec> login(LoginRec loginRec);
 
     PageResultVo<User> getUserByPage(PageVo page);
 
-    User updateUser(Long id, SignOnRec sign);
+    User updateUser(Long id, UserRec userRec);
 
     void delUser(Long id);
 
-    JwtRspRec refresh(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    ApiResult<JwtRspRec> refresh(RefreshRec refreshRec);
 }

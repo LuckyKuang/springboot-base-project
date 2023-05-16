@@ -18,13 +18,8 @@ package com.luckykuang.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.base.BaseParam;
-import com.luckykuang.auth.enums.UserStatusEnum;
-import com.luckykuang.auth.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,41 +49,52 @@ public class User extends BaseParam {
 
     @Serial
     private static final long serialVersionUID = -3932246348124717588L;
-    @NotBlank
+//    @NotBlank
     @Column(nullable = false, length = 128)
-    @Schema(description = "名称")
+    @Schema(description = "用户名称")
     private String name;
 
-    @NotBlank
+//    @NotBlank
     @Column(nullable = false, length = 128)
     @Schema(description = "用户名")
     private String username;
 
-    @NotBlank
+//    @NotNull
+    @Column(nullable = false, length = 1)
+    @Schema(description = "性别 1-男 0-女",allowableValues = {"1","0"})
+    private Integer gender;
+
+//    @NotBlank
     @Column(nullable = false, length = 128)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(description = "密码")
     private String password;
 
-    @Email
+//    @Email
     @Column(length = 128)
     @Schema(description = "邮箱")
     private String email;
 
-    @NotBlank
-    @Mobile
+//    @NotBlank
+//    @Mobile
     @Column(nullable = false, length = 32)
     @Schema(description = "手机号码")
     private String phone;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 32)
-    @Schema(description = "用户状态")
-    private UserStatusEnum userStatus;
+    @Column(length = 128)
+    @Schema(description = "用户头像")
+    private String avatar;
+
+//    @NotNull
+    @Column(nullable = false, length = 1)
+    @Schema(description = "用户状态 1-启用 0-禁用",allowableValues = {"1", "0"})
+    private Integer status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Dept dept;
 
     @Override
     public String toString() {
@@ -97,8 +103,9 @@ public class User extends BaseParam {
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", userStatus=" + userStatus +
+                ", status=" + status +
                 ", role=" + role +
+                ", dept=" + dept +
                 '}';
     }
 }
