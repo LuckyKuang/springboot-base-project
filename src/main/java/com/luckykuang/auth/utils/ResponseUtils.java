@@ -2,7 +2,7 @@ package com.luckykuang.auth.utils;
 
 import com.google.gson.Gson;
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

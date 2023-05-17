@@ -17,7 +17,7 @@
 package com.luckykuang.auth.exception;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

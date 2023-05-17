@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service;
+package com.luckykuang.auth.request;
 
-import com.luckykuang.auth.model.Permission;
-import com.luckykuang.auth.request.PermissionReq;
-import com.luckykuang.auth.vo.PageResultVo;
-import com.luckykuang.auth.vo.PageVo;
-
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @author luckykuang
- * @date 2023/4/20 14:18
+ * @date 2023/4/18 16:53
  */
-public interface PermissionService {
-    Permission addPermission(PermissionReq permissionReq);
-
-    Permission getPermissionById(Long id);
-
-    List<Permission> getPermissions();
-
-    PageResultVo<Permission> getPermissionsByPage(PageVo page);
-
-    Permission updatePermission(Long id, PermissionReq permissionReq);
-
-    void delPermission(Long id);
+public record LoginReq(
+        @NotBlank
+        @Schema(description = "用户名")
+        String username,
+        @NotBlank
+        @Schema(description = "密码")
+        String password) {
+    public static LoginReq from(LoginReq loginReq){
+        return new LoginReq(
+                loginReq.username.toLowerCase(),
+                loginReq.password);
+    }
 }

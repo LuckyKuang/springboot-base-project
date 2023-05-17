@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.model;
+package com.luckykuang.auth.security.userdetails;
 
+import com.luckykuang.auth.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @AllArgsConstructor
-public class Login implements UserDetails {
+public class LoginUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = -8218935861136040887L;

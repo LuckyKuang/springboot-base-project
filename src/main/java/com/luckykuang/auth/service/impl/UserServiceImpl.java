@@ -17,27 +17,31 @@
 package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.config.jwt.JwtTokenProvider;
 import com.luckykuang.auth.constants.RedisConstants;
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Dept;
-import com.luckykuang.auth.model.Login;
 import com.luckykuang.auth.model.Role;
 import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.record.JwtRspRec;
-import com.luckykuang.auth.record.LoginRec;
-import com.luckykuang.auth.record.RefreshRec;
-import com.luckykuang.auth.record.UserRec;
 import com.luckykuang.auth.repository.DeptRepository;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.repository.UserRepository;
+import com.luckykuang.auth.request.LoginReq;
+import com.luckykuang.auth.request.RefreshReq;
+import com.luckykuang.auth.request.UserReq;
+import com.luckykuang.auth.response.CaptchaRsp;
+import com.luckykuang.auth.response.TokenRsp;
+import com.luckykuang.auth.security.userdetails.LoginUserDetails;
+import com.luckykuang.auth.security.userdetails.LoginUserDetailsService;
+import com.luckykuang.auth.security.utils.JwtTokenProvider;
+import com.luckykuang.auth.service.EasyCaptchaService;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
 import com.luckykuang.auth.utils.RedisUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +50,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +61,7 @@ import java.util.Optional;
 
 import static com.luckykuang.auth.constants.CoreConstants.ADMIN;
 import static com.luckykuang.auth.constants.CoreConstants.BEARER_HEAD;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author luckykuang
@@ -75,12 +81,13 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final RedisUtils redisUtils;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final LoginUserDetailsService userDetailsService;
+    private final EasyCaptchaService easyCaptchaService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User addUser(UserRec userRec) {
-        UserRec from = UserRec.from(userRec);
+    public User addUser(UserReq userReq) {
+        UserReq from = UserReq.from(userReq);
         Optional<User> userOptional = userRepository.findByUsername(from.username());
         AssertUtils.isTrue(userOptional.isEmpty(), ErrorCode.NAME_EXIST);
         return saveUser(null, from);
@@ -102,8 +109,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResult<JwtRspRec> login(LoginRec loginRec) {
-        LoginRec from = LoginRec.from(loginRec);
+    public ApiResult<TokenRsp> login(LoginReq loginReq) {
+        LoginReq from = LoginReq.from(loginReq);
         User user = userRepository.findByUsername(from.username())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -119,7 +126,7 @@ public class UserServiceImpl implements UserService {
                 user.getId(),
                 jwtAccessTokenExpirationDate / 1000
         );
-        return ApiResult.success(JwtRspRec.from(accessToken,refreshToken));
+        return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
     }
 
     @Override
@@ -130,8 +137,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User updateUser(Long id, UserRec userRec) {
-        UserRec from = UserRec.from(userRec);
+    public User updateUser(Long id, UserReq userReq) {
+        UserReq from = UserReq.from(userReq);
         Optional<User> repositoryById = userRepository.findById(id);
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
         Optional<User> usersOptional = userRepository.findByIdIsNotAndUsername(id, from.username());
@@ -147,17 +154,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResult<JwtRspRec> refresh(RefreshRec refreshRec) {
-        String bearerToken = refreshRec.refreshToken();
+    public ApiResult<TokenRsp> refresh(RefreshReq refreshReq) {
+        String bearerToken = refreshReq.refreshToken();
         String accessToken;
         String refreshToken;
         if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
-            return ApiResult.success(JwtRspRec.from(null, null));
+            return ApiResult.success(TokenRsp.from(null, null));
         }
         String token = bearerToken.substring(BEARER_HEAD.length());
         String username = jwtTokenProvider.getUsername(token);
         if (username != null) {
-            Login userDetails = userDetailsService.loadUserByUsername(username);
+            LoginUserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (Boolean.TRUE.equals(jwtTokenProvider.validateToken(token,userDetails))){
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -172,34 +179,53 @@ public class UserServiceImpl implements UserService {
                         userDetails.getUserId(),
                         jwtAccessTokenExpirationDate / 1000
                 );
-                return ApiResult.success(JwtRspRec.from(accessToken,refreshToken));
+                return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
             }
         }
-        return ApiResult.success(JwtRspRec.from(null, null));
+        return ApiResult.success(TokenRsp.from(null, null));
     }
 
-    private User saveUser(Long id, UserRec userRec) {
-        Optional<User> userOptional = userRepository.findByPhone(userRec.phone());
+    @Override
+    public CaptchaRsp getCaptcha() {
+        return easyCaptchaService.getCaptcha();
+    }
+
+    @Override
+    public ApiResult<Void> logout(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION);
+        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
+            return ApiResult.failed(ErrorCode.BAD_REQUEST);
+        }
+        String token = bearerToken.substring(BEARER_HEAD.length());
+        // 删除redis缓存
+        redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+        // 清除security缓存
+        SecurityContextHolder.clearContext();
+        return ApiResult.success();
+    }
+
+    private User saveUser(Long id, UserReq userReq) {
+        Optional<User> userOptional = userRepository.findByPhone(userReq.phone());
         AssertUtils.isTrue(userOptional.isEmpty(), ErrorCode.PHONE_EXIST);
-        Optional<Role> roleOptional = roleRepository.findById(userRec.roleId());
+        Optional<Role> roleOptional = roleRepository.findById(userReq.roleId());
         if (roleOptional.isEmpty() || roleOptional.get().getName().equals(ADMIN)){
             throw new BusinessException(ErrorCode.ROLE_NOT_EXIST);
         }
-        Optional<Dept> deptOptional = deptRepository.findById(userRec.deptId());
+        Optional<Dept> deptOptional = deptRepository.findById(userReq.deptId());
         if (deptOptional.isEmpty()){
             throw new BusinessException(ErrorCode.DEPT_NOT_EXIST);
         }
         User user = new User();
         user.setId(id);
-        user.setName(userRec.name());
-        user.setUsername(userRec.username());
+        user.setName(userReq.name());
+        user.setUsername(userReq.username());
         // 加密
-        user.setPassword(passwordEncoder.encode(userRec.password()));
-        user.setGender(userRec.gender());
-        user.setEmail(userRec.email());
-        user.setPhone(userRec.phone());
-        user.setAvatar(userRec.avatar());
-        user.setStatus(userRec.status());
+        user.setPassword(passwordEncoder.encode(userReq.password()));
+        user.setGender(userReq.gender());
+        user.setEmail(userReq.email());
+        user.setPhone(userReq.phone());
+        user.setAvatar(userReq.avatar());
+        user.setStatus(userReq.status());
         
         User save = userRepository.save(user);
         save.setRole(roleOptional.get());

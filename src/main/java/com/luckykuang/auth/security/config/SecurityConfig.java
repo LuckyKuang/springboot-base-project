@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.config;
+package com.luckykuang.auth.security.config;
 
-import com.luckykuang.auth.config.jwt.JwtAccessDeniedHandler;
-import com.luckykuang.auth.config.jwt.JwtAuthEntryPoint;
-import com.luckykuang.auth.config.jwt.JwtAuthFilter;
-import com.luckykuang.auth.service.impl.UserDetailsServiceImpl;
+import com.luckykuang.auth.security.exception.JwtAccessDeniedHandler;
+import com.luckykuang.auth.security.exception.JwtAuthenticationEntryPoint;
+import com.luckykuang.auth.security.filter.CaptchaFilter;
+import com.luckykuang.auth.security.filter.JwtAuthenticationFilter;
+import com.luckykuang.auth.security.userdetails.LoginUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -61,12 +62,49 @@ public class SecurityConfig {
     private List<String> corsUrls;
     @Value("#{'${app.cors-methods}'.split(',')}")
     private List<String> corsMethods;
-    private final JwtAuthFilter jwtAuthFilter;
-    private final JwtAuthEntryPoint jwtAuthEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final LoginUserDetailsService userDetailsService;
 //    private final LogoutHandler logoutHandler;
 
+
+    /**
+     * 安全校验
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                // 禁用csrf，防止跨站伪造
+                .csrf().disable()
+                // 跨域配置
+//                .cors(cors-> cors
+//                        // 自定义跨域配置
+//                        .configurationSource(corsConfigurationSource()))
+                // jwt是无状态的，不需要session
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 过滤配置
+                .authorizeHttpRequests(authorize -> authorize
+                        // 登录和刷新令牌放行
+                        .requestMatchers("/auth/v1/sign/login").permitAll()
+                        .requestMatchers("/auth/v1/sign/refresh").permitAll()
+                        .anyRequest().authenticated()
+                )
+                // 验证码过滤器校验
+//                .addFilterBefore(new CaptchaFilter(),UsernamePasswordAuthenticationFilter.class)
+                // jwt认证
+//                .authenticationProvider(authenticationProvider())
+                // jwt过滤器校验
+//                .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class)
+                // 异常处理
+                .exceptionHandling(exceptions -> exceptions
+                        // 未登录自定义处理
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+                        // 没权限自定义处理
+                        .accessDeniedHandler(new JwtAccessDeniedHandler()));
+        http.addFilterBefore(new CaptchaFilter(),UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
     /**
      * Security 忽略资源路径
@@ -81,52 +119,6 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/doc.html");
-    }
-
-    /**
-     * 安全校验
-     */
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // 禁用csrf，防止跨站伪造
-                .csrf().disable()
-                // 跨域配置
-                .cors(cors-> cors
-                        // 自定义跨域配置
-                        .configurationSource(corsConfigurationSource()))
-                // 禁用默认登录
-                .httpBasic().disable()
-                // 禁用表单登录
-                .formLogin().disable()
-                // 禁用rememberMe
-                .rememberMe().disable()
-                // 过滤配置
-                .authorizeHttpRequests(authorize -> authorize
-                        // 登录和刷新令牌放行
-                        .requestMatchers("/auth/v1/sign/login").permitAll()
-                        .requestMatchers("/auth/v1/sign/refresh").permitAll()
-                        .anyRequest().authenticated()
-                )
-                // jwt是无状态的，不需要session
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // jwt认证
-                .authenticationProvider(authenticationProvider())
-                // jwt过滤器
-                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
-                // 异常处理
-                .exceptionHandling(exceptions -> exceptions
-                        // 未登录自定义处理
-                        .authenticationEntryPoint(jwtAuthEntryPoint)
-                        // 没权限自定义处理
-                        .accessDeniedHandler(jwtAccessDeniedHandler));
-                // 退出登录
-//                .logout(logout -> logout
-//                        .logoutUrl("/auth/logout")
-//                        .addLogoutHandler(logoutHandler)
-//                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
-        return http.build();
     }
 
     /**

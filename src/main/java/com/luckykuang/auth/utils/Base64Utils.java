@@ -16,7 +16,7 @@
 
 package com.luckykuang.auth.utils;
 
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 
 import java.io.*;

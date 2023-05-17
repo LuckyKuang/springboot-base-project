@@ -17,18 +17,17 @@
 package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.record.JwtRspRec;
-import com.luckykuang.auth.record.LoginRec;
-import com.luckykuang.auth.record.RefreshRec;
+import com.luckykuang.auth.request.LoginReq;
+import com.luckykuang.auth.request.RefreshReq;
+import com.luckykuang.auth.response.CaptchaRsp;
+import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author luckykuang
@@ -44,13 +43,25 @@ public class LoginController {
 
     @Operation(summary = "登录")
     @PostMapping("login")
-    public ApiResult<JwtRspRec> login(@RequestBody @Validated LoginRec loginRec){
-        return userService.login(loginRec);
+    public ApiResult<TokenRsp> login(@RequestBody @Validated LoginReq loginReq){
+        return userService.login(loginReq);
+    }
+
+    @Operation(summary = "退出登录")
+    @DeleteMapping("logout")
+    public ApiResult<Void> logout(HttpServletRequest request){
+        return userService.logout(request);
     }
 
     @Operation(summary = "刷新令牌")
     @PostMapping("refresh")
-    public ApiResult<JwtRspRec> refresh(@RequestBody @Validated RefreshRec refreshRec) {
-        return userService.refresh(refreshRec);
+    public ApiResult<TokenRsp> refresh(@RequestBody @Validated RefreshReq refreshReq) {
+        return userService.refresh(refreshReq);
+    }
+
+    @Operation(summary = "获取验证码")
+    @GetMapping("getCaptcha")
+    public ApiResult<CaptchaRsp> getCaptcha() {
+        return ApiResult.success(userService.getCaptcha());
     }
 }

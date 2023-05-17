@@ -26,8 +26,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
  * @author fankuangyong
  * @date 2023/5/15 14:32
  */
-public class TokenUtils {
-    private TokenUtils(){}
+public class RequestUtils {
+    private RequestUtils(){}
 
     /**
      * 将请求头的token截取返回

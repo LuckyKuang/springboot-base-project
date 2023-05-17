@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.enums;
+package com.luckykuang.auth.constants.enums;
 
 /**
  * 错误码枚举类
@@ -55,6 +55,8 @@ public enum ErrorCode {
     ROLE_NOT_EXIST(1014,"角色不存在"),
     PERMISSION_NOT_EXIST(1015,"权限不存在"),
     DEPT_NOT_EXIST(1016,"部门不存在"),
+    CAPTCHA_TIMEOUT(1017, "验证码已过期"),
+    CAPTCHA_ERROR(1018, "验证码错误"),
     ;
     private final Integer code;
     private final String message;

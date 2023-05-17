@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.config.jwt;
+package com.luckykuang.auth.security.filter;
 
 import com.luckykuang.auth.constants.RedisConstants;
-import com.luckykuang.auth.enums.ErrorCode;
-import com.luckykuang.auth.service.impl.UserDetailsServiceImpl;
+import com.luckykuang.auth.constants.enums.ErrorCode;
+import com.luckykuang.auth.security.userdetails.LoginUserDetailsService;
+import com.luckykuang.auth.security.utils.JwtTokenProvider;
 import com.luckykuang.auth.utils.RedisUtils;
+import com.luckykuang.auth.utils.RequestUtils;
 import com.luckykuang.auth.utils.ResponseUtils;
-import com.luckykuang.auth.utils.TokenUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,10 +45,10 @@ import java.io.IOException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final LoginUserDetailsService userDetailsService;
     private final RedisUtils redisUtils;
 
     @Override
@@ -62,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         else {
-            String token = TokenUtils.resolveToken(request);
+            String token = RequestUtils.resolveToken(request);
             if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 读取redis缓存
                 Object tokenCache = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);

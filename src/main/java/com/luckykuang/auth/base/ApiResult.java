@@ -16,7 +16,7 @@
 
 package com.luckykuang.auth.base;
 
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

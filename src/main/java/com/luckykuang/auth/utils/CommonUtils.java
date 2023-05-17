@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service;
+package com.luckykuang.auth.utils;
 
-import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.request.RoleReq;
-import com.luckykuang.auth.vo.PageResultVo;
-import com.luckykuang.auth.vo.PageVo;
-
-import java.util.List;
+import java.util.UUID;
 
 /**
- * @author luckykuang
- * @date 2023/4/20 14:19
+ * @author fankuangyong
+ * @date 2023/5/17 15:46
  */
-public interface RoleService {
-    Role addRole(RoleReq roleReq);
+public class CommonUtils {
 
-    Role getRoleById(Long id);
+    private CommonUtils(){}
 
-    List<Role> getRoles();
-
-    PageResultVo<Role> getRolesByPage(PageVo page);
-
-    Role updateRole(Long id, RoleReq roleReq);
-
-    void delRole(Long id);
+    /**
+     * 获取去除"-"后的uuid
+     * @param flag true-获取去除"-"后的uuid  false-获取原始uuid
+     * @return
+     */
+    public static String getUUID(boolean flag){
+        if (flag){
+            return UUID.randomUUID().toString().replace("-","");
+        }
+        return UUID.randomUUID().toString();
+    }
 }

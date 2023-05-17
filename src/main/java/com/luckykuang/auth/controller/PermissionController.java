@@ -18,11 +18,12 @@ package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.Permission;
-import com.luckykuang.auth.record.PermissionRec;
+import com.luckykuang.auth.request.PermissionReq;
 import com.luckykuang.auth.service.PermissionService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,38 +46,38 @@ public class PermissionController {
     private final PermissionService permissionService;
 
 
-    @Operation(summary = "分页查询权限列表")
+    @Operation(summary = "分页查询权限列表",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping("page")
     public ApiResult<PageResultVo<Permission>> getPermissionsByPage(PageVo page){
         return ApiResult.success(permissionService.getPermissionsByPage(page));
     }
 
-    @Operation(summary = "查询权限列表")
+    @Operation(summary = "查询权限列表",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping
     public ApiResult<List<Permission>> getPermissions(){
         return ApiResult.success(permissionService.getPermissions());
     }
 
-    @Operation(summary = "通过id查询权限")
+    @Operation(summary = "通过id查询权限",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping("{permissionId}")
     public ApiResult<Permission> getPermissionById(@PathVariable("permissionId") Long id){
         return ApiResult.success(permissionService.getPermissionById(id));
     }
 
-    @Operation(summary = "新增权限")
+    @Operation(summary = "新增权限",security = @SecurityRequirement(name = "Authorization"))
     @PostMapping
-    public ApiResult<Permission> addPermission(@RequestBody @Validated PermissionRec permissionRec){
-        return ApiResult.success(permissionService.addPermission(permissionRec));
+    public ApiResult<Permission> addPermission(@RequestBody @Validated PermissionReq permissionReq){
+        return ApiResult.success(permissionService.addPermission(permissionReq));
     }
 
-    @Operation(summary = "更新权限")
+    @Operation(summary = "更新权限",security = @SecurityRequirement(name = "Authorization"))
     @PutMapping("{permissionId}")
     public ApiResult<Permission> updatePermission(@PathVariable("permissionId") Long id,
-                                                  @RequestBody @Validated PermissionRec permissionRec){
-        return ApiResult.success(permissionService.updatePermission(id, permissionRec));
+                                                  @RequestBody @Validated PermissionReq permissionReq){
+        return ApiResult.success(permissionService.updatePermission(id, permissionReq));
     }
 
-    @Operation(summary = "删除权限")
+    @Operation(summary = "删除权限",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("{permissionId}")
     public ApiResult<Long> delPermission(@PathVariable("permissionId") Long id){
         permissionService.delPermission(id);

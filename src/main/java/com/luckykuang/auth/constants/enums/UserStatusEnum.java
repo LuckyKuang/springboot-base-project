@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service;
-
-import com.luckykuang.auth.model.Permission;
-import com.luckykuang.auth.request.PermissionReq;
-import com.luckykuang.auth.vo.PageResultVo;
-import com.luckykuang.auth.vo.PageVo;
-
-import java.util.List;
+package com.luckykuang.auth.constants.enums;
 
 /**
+ * 用户状态
  * @author luckykuang
- * @date 2023/4/20 14:18
+ * @date 2023/4/11 13:39
  */
-public interface PermissionService {
-    Permission addPermission(PermissionReq permissionReq);
-
-    Permission getPermissionById(Long id);
-
-    List<Permission> getPermissions();
-
-    PageResultVo<Permission> getPermissionsByPage(PageVo page);
-
-    Permission updatePermission(Long id, PermissionReq permissionReq);
-
-    void delPermission(Long id);
+public enum UserStatusEnum {
+    /**
+     * 活跃
+     */
+    ACTIVE,
+    /**
+     * 禁用
+     */
+    DISABLED
 }

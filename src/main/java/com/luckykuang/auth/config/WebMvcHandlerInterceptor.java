@@ -17,7 +17,7 @@
 package com.luckykuang.auth.config;
 
 import com.luckykuang.auth.base.RequestContext;
-import com.luckykuang.auth.config.jwt.JwtTokenProvider;
+import com.luckykuang.auth.security.utils.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

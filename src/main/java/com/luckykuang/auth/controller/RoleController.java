@@ -18,11 +18,12 @@ package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.record.RoleRec;
+import com.luckykuang.auth.request.RoleReq;
 import com.luckykuang.auth.service.RoleService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,38 +45,38 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    @Operation(summary = "分页查询角色列表")
+    @Operation(summary = "分页查询角色列表",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping("page")
     public ApiResult<PageResultVo<Role>> getRolesByPage(PageVo page){
         return ApiResult.success(roleService.getRolesByPage(page));
     }
 
-    @Operation(summary = "查询角色列表")
+    @Operation(summary = "查询角色列表",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping
     public ApiResult<List<Role>> queryRoles(){
         return ApiResult.success(roleService.getRoles());
     }
 
-    @Operation(summary = "通过id查询角色")
+    @Operation(summary = "通过id查询角色",security = @SecurityRequirement(name = "Authorization"))
     @GetMapping("{roleId}")
     public ApiResult<Role> queryRoleById(@PathVariable("roleId") Long id){
         return ApiResult.success(roleService.getRoleById(id));
     }
 
-    @Operation(summary = "新增角色")
+    @Operation(summary = "新增角色",security = @SecurityRequirement(name = "Authorization"))
     @PostMapping
-    public ApiResult<Role> insertRole(@RequestBody @Validated RoleRec roleRec){
-        return ApiResult.success(roleService.addRole(roleRec));
+    public ApiResult<Role> insertRole(@RequestBody @Validated RoleReq roleReq){
+        return ApiResult.success(roleService.addRole(roleReq));
     }
 
-    @Operation(summary = "更新角色")
+    @Operation(summary = "更新角色",security = @SecurityRequirement(name = "Authorization"))
     @PutMapping("{roleId}")
     public ApiResult<Role> updateRole(@PathVariable("roleId") Long id,
-                                      @RequestBody @Validated RoleRec roleRec){
-        return ApiResult.success(roleService.updateRole(id, roleRec));
+                                      @RequestBody @Validated RoleReq roleReq){
+        return ApiResult.success(roleService.updateRole(id, roleReq));
     }
 
-    @Operation(summary = "删除角色")
+    @Operation(summary = "删除角色",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("{roleId}")
     public ApiResult<Long> delRole(@PathVariable("roleId") Long id){
         roleService.delRole(id);

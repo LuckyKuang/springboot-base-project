@@ -14,35 +14,25 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.exception;
+package com.luckykuang.auth.security.config;
 
-import com.luckykuang.auth.constants.enums.ErrorCode;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * @author luckykuang
- * @date 2023/4/21 15:12
+ * @author fankuangyong
+ * @date 2023/5/17 14:09
  */
 @Getter
-public class BusinessException extends RuntimeException{
-    /**
-     * 错误码
-     */
-    private final Integer code;
-    /**
-     * 错误提示
-     */
-    private final String message;
-
-    public BusinessException(ErrorCode errorCode){
-        super();
-        this.code = errorCode.getCode();
-        this.message = errorCode.getMessage();
-    }
-
-    public BusinessException(String message){
-        super();
-        this.code = ErrorCode.INTERNAL_SERVER_ERROR.getCode();
-        this.message = message;
-    }
+@Setter
+@Configuration
+public class TokenSecretConfig {
+    @Value("${app.jwt-secret:luckykuang}")
+    private String jwtSecret;
+    @Value("${app.jwt-expiration.access-token-milliseconds:10000}")
+    private long jwtAccessTokenExpirationDate;
+    @Value("${app.jwt-expiration.refresh-token-milliseconds:100000}")
+    private long jwtRefreshTokenExpirationDate;
 }

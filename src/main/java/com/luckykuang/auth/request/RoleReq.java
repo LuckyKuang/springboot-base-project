@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.record;
+package com.luckykuang.auth.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
@@ -26,7 +26,7 @@ import jakarta.validation.constraints.Pattern;
  * @author luckykuang
  * @date 2023/4/21 22:45
  */
-public record RoleRec(@NotBlank
+public record RoleReq(@NotBlank
                       @Pattern(regexp = "^ROLE_(.*)", message = "必须以<ROLE_>字符开头")
                       @Schema(description = "角色编号")
                       String code,
@@ -46,13 +46,13 @@ public record RoleRec(@NotBlank
                       @NotNull
                       @Schema(description = "权限id")
                       Long permissionId) {
-    public static RoleRec from(RoleRec roleRec){
-        return new RoleRec(
-                roleRec.code.toUpperCase(),
-                roleRec.name,
-                roleRec.sort,
-                roleRec.status,
-                roleRec.description,
-                roleRec.permissionId);
+    public static RoleReq from(RoleReq roleReq){
+        return new RoleReq(
+                roleReq.code.toUpperCase(),
+                roleReq.name,
+                roleReq.sort,
+                roleReq.status,
+                roleReq.description,
+                roleReq.permissionId);
     }
 }

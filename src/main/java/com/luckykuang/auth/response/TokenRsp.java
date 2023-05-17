@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.record;
+package com.luckykuang.auth.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,11 +24,11 @@ import static com.luckykuang.auth.constants.CoreConstants.BEARER;
  * @author luckykuang
  * @date 2023/4/18 16:48
  */
-public record JwtRspRec(
+public record TokenRsp(
         @Schema(description = "验证令牌") String accessToken,
         @Schema(description = "刷新令牌") String refreshToken,
         @Schema(description = "令牌类型") String tokenType) {
-    public static JwtRspRec from(String accessToken,String refreshToken){
-        return new JwtRspRec(accessToken,refreshToken, BEARER);
+    public static TokenRsp from(String accessToken, String refreshToken){
+        return new TokenRsp(accessToken,refreshToken, BEARER);
     }
 }

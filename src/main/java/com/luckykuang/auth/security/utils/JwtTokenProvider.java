@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.config.jwt;
+package com.luckykuang.auth.security.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.luckykuang.auth.exception.BusinessException;
+import com.luckykuang.auth.security.config.TokenSecretConfig;
+import com.luckykuang.auth.utils.CommonUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -46,14 +48,10 @@ import java.util.Date;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${app.jwt-secret:luckykuang}")
-    private String jwtSecret;
-    @Value("${app.jwt-expiration.access-token-milliseconds:10000}")
-    private long jwtAccessTokenExpirationDate;
-    @Value("${app.jwt-expiration.refresh-token-milliseconds:100000}")
-    private long jwtRefreshTokenExpirationDate;
+    private final TokenSecretConfig tokenSecretConfig;
 
     /**
      * 生成验证令牌
@@ -61,7 +59,7 @@ public class JwtTokenProvider {
      * @return AccessToken
      */
     public String generateAccessToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(),jwtAccessTokenExpirationDate,userId);
+        return createToken(authentication.getName(),tokenSecretConfig.getJwtAccessTokenExpirationDate(),userId);
     }
 
     /**
@@ -70,7 +68,7 @@ public class JwtTokenProvider {
      * @return 刷新令牌
      */
     public String generateRefreshToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(),jwtRefreshTokenExpirationDate,userId);
+        return createToken(authentication.getName(),tokenSecretConfig.getJwtRefreshTokenExpirationDate(),userId);
     }
 
     /**
@@ -146,6 +144,7 @@ public class JwtTokenProvider {
         String sign;
         try {
             sign = JWT.create()
+                    .withJWTId(CommonUtils.getUUID(true))
                     .withSubject(userName)
                     .withIssuer(String.valueOf(userId))
                     .withIssuedAt(new Date(System.currentTimeMillis()))
@@ -163,6 +162,6 @@ public class JwtTokenProvider {
      * 生产环境建议修改成RSA加密
      */
     private Algorithm getKey(){
-        return Algorithm.HMAC256(jwtSecret);
+        return Algorithm.HMAC256(tokenSecretConfig.getJwtSecret());
     }
 }

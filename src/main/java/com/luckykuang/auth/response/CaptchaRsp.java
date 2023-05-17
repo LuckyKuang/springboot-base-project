@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service;
+package com.luckykuang.auth.response;
 
-import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.request.RoleReq;
-import com.luckykuang.auth.vo.PageResultVo;
-import com.luckykuang.auth.vo.PageVo;
-
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * @author luckykuang
- * @date 2023/4/20 14:19
+ * @author fankuangyong
+ * @date 2023/5/17 11:19
  */
-public interface RoleService {
-    Role addRole(RoleReq roleReq);
-
-    Role getRoleById(Long id);
-
-    List<Role> getRoles();
-
-    PageResultVo<Role> getRolesByPage(PageVo page);
-
-    Role updateRole(Long id, RoleReq roleReq);
-
-    void delRole(Long id);
+public record CaptchaRsp(@Schema(description = "验证码key") String captchaKey,
+                         @Schema(description = "验证码base64") String captchaBase64) {
+    public static CaptchaRsp from(String captchaKey, String captchaBase64){
+        return new CaptchaRsp(captchaKey,captchaBase64);
+    }
 }

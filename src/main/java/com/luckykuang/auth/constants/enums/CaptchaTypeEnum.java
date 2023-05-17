@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.record;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
+package com.luckykuang.auth.constants.enums;
 
 /**
- * @author luckykuang
- * @date 2023/4/18 16:53
+ * @author fankuangyong
+ * @date 2023/5/17 10:52
  */
-public record LoginRec(
-        @NotBlank
-        @Schema(description = "用户名")
-        String username,
-        @NotBlank
-        @Schema(description = "密码")
-        String password) {
-    public static LoginRec from(LoginRec loginRec){
-        return new LoginRec(
-                loginRec.username.toLowerCase(),
-                loginRec.password);
-    }
+public enum CaptchaTypeEnum {
+    /**
+     * 算数
+     */
+    ARITHMETIC,
+    /**
+     * 中文
+     */
+    CHINESE,
+    /**
+     * 中文闪图
+     */
+    CHINESE_GIF,
+    /**
+     * 闪图
+     */
+    GIF,
+    SPEC
 }

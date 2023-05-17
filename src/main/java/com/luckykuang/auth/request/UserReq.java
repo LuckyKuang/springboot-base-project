@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.record;
+package com.luckykuang.auth.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.validation.Mobile;
@@ -27,7 +27,7 @@ import jakarta.validation.constraints.NotNull;
  * @author luckykuang
  * @date 2023/4/18 17:13
  */
-public record UserRec(
+public record UserReq(
         @NotBlank
         @Schema(description = "用户名称")
         String name,
@@ -59,17 +59,17 @@ public record UserRec(
         @NotNull
         @Schema(description = "部门id")
         Long deptId) {
-    public static UserRec from(UserRec userRec){
-        return new UserRec(
-                userRec.name,
-                userRec.username.toLowerCase(),
-                userRec.phone,
-                userRec.email,
-                userRec.gender,
-                userRec.password,
-                userRec.avatar,
-                userRec.status,
-                userRec.roleId,
-                userRec.deptId);
+    public static UserReq from(UserReq userReq){
+        return new UserReq(
+                userReq.name,
+                userReq.username.toLowerCase(),
+                userReq.phone,
+                userReq.email,
+                userReq.gender,
+                userReq.password,
+                userReq.avatar,
+                userReq.status,
+                userReq.roleId,
+                userReq.deptId);
     }
 }

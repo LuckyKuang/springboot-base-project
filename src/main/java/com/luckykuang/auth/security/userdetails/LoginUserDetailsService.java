@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service.impl;
+package com.luckykuang.auth.security.userdetails;
 
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Login;
 import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,19 +31,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class LoginUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     /**
-     * Login 继承于 UserDetails，故返回值可以是Login
+     * LoginUserDetails 继承于 UserDetails，故返回值可以是LoginUserDetails
      * @param username 用户名
      * @return UserDetails
      */
     @Override
-    public Login loadUserByUsername(String username) throws UsernameNotFoundException {
+    public LoginUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
-        return new Login(user.getId(),user.getUsername(),user.getPassword(),user.getRole());
+        return new LoginUserDetails(user.getId(),user.getUsername(),user.getPassword(),user.getRole());
     }
 }

@@ -16,11 +16,11 @@
 
 package com.luckykuang.auth.service.impl;
 
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Permission;
-import com.luckykuang.auth.record.PermissionRec;
 import com.luckykuang.auth.repository.PermissionRepository;
+import com.luckykuang.auth.request.PermissionReq;
 import com.luckykuang.auth.service.PermissionService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
@@ -47,8 +47,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Permission addPermission(PermissionRec permissionRec) {
-        PermissionRec from = PermissionRec.from(permissionRec);
+    public Permission addPermission(PermissionReq permissionReq) {
+        PermissionReq from = PermissionReq.from(permissionReq);
         Optional<Permission> permissionsOptional = permissionRepository
                 .findByCodeOrName(from.code(), from.name());
         AssertUtils.isTrue(permissionsOptional.isEmpty(), ErrorCode.NAME_EXIST);
@@ -73,8 +73,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Permission updatePermission(Long id, PermissionRec permissionRec) {
-        PermissionRec from = PermissionRec.from(permissionRec);
+    public Permission updatePermission(Long id, PermissionReq permissionReq) {
+        PermissionReq from = PermissionReq.from(permissionReq);
         Optional<Permission> repositoryById = permissionRepository.findById(id);
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
         Optional<Permission> permissionsOptional = permissionRepository
@@ -84,12 +84,12 @@ public class PermissionServiceImpl implements PermissionService {
         return savePermission(id, from);
     }
 
-    private Permission savePermission(Long id, PermissionRec permissionRec) {
+    private Permission savePermission(Long id, PermissionReq permissionReq) {
         Permission permission = new Permission();
         permission.setId(id);
-        permission.setCode(permissionRec.code());
-        permission.setName(permissionRec.name());
-        permission.setDescription(permissionRec.description());
+        permission.setCode(permissionReq.code());
+        permission.setName(permissionReq.name());
+        permission.setDescription(permissionReq.description());
         return permissionRepository.save(permission);
     }
 

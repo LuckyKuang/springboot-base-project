@@ -18,12 +18,14 @@ package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.record.JwtRspRec;
-import com.luckykuang.auth.record.LoginRec;
-import com.luckykuang.auth.record.RefreshRec;
-import com.luckykuang.auth.record.UserRec;
+import com.luckykuang.auth.request.LoginReq;
+import com.luckykuang.auth.request.RefreshReq;
+import com.luckykuang.auth.request.UserReq;
+import com.luckykuang.auth.response.CaptchaRsp;
+import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -32,7 +34,7 @@ import java.util.List;
  * @date 2023/4/20 14:19
  */
 public interface UserService {
-    User addUser(UserRec userRec);
+    User addUser(UserReq userReq);
 
     User getUserById(Long id);
 
@@ -40,13 +42,17 @@ public interface UserService {
 
     List<User> getUsers();
 
-    ApiResult<JwtRspRec> login(LoginRec loginRec);
+    ApiResult<TokenRsp> login(LoginReq loginReq);
 
     PageResultVo<User> getUserByPage(PageVo page);
 
-    User updateUser(Long id, UserRec userRec);
+    User updateUser(Long id, UserReq userReq);
 
     void delUser(Long id);
 
-    ApiResult<JwtRspRec> refresh(RefreshRec refreshRec);
+    ApiResult<TokenRsp> refresh(RefreshReq refreshReq);
+
+    CaptchaRsp getCaptcha();
+
+    ApiResult<Void> logout(HttpServletRequest request);
 }

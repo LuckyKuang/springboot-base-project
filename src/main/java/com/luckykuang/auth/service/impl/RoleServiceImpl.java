@@ -16,13 +16,13 @@
 
 package com.luckykuang.auth.service.impl;
 
-import com.luckykuang.auth.enums.ErrorCode;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Permission;
 import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.record.RoleRec;
 import com.luckykuang.auth.repository.PermissionRepository;
 import com.luckykuang.auth.repository.RoleRepository;
+import com.luckykuang.auth.request.RoleReq;
 import com.luckykuang.auth.service.RoleService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
@@ -50,8 +50,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Role addRole(RoleRec roleRec) {
-        RoleRec from = RoleRec.from(roleRec);
+    public Role addRole(RoleReq roleReq) {
+        RoleReq from = RoleReq.from(roleReq);
         Optional<Role> roleOptional = roleRepository.findByCodeOrName(from.code(), from.name());
         AssertUtils.isTrue(roleOptional.isEmpty(), ErrorCode.NAME_EXIST);
         return saveRole(null, from);
@@ -75,8 +75,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Role updateRole(Long id, RoleRec roleRec) {
-        RoleRec from = RoleRec.from(roleRec);
+    public Role updateRole(Long id, RoleReq roleReq) {
+        RoleReq from = RoleReq.from(roleReq);
         Optional<Role> repositoryById = roleRepository.findById(id);
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
         Optional<Role> roleOptional = roleRepository.findByIdIsNotAndCodeOrName(id, from.code(), from.name());
@@ -85,18 +85,18 @@ public class RoleServiceImpl implements RoleService {
         return saveRole(id, from);
     }
 
-    private Role saveRole(Long id, RoleRec roleRec) {
-        Optional<Permission> permission = permissionRepository.findById(roleRec.permissionId());
+    private Role saveRole(Long id, RoleReq roleReq) {
+        Optional<Permission> permission = permissionRepository.findById(roleReq.permissionId());
         if (permission.isEmpty()){
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
         Role role = new Role();
         role.setId(id);
-        role.setCode(roleRec.code());
-        role.setName(roleRec.name());
-        role.setSort(roleRec.sort());
-        role.setStatus(roleRec.status());
-        role.setDescription(roleRec.description());
+        role.setCode(roleReq.code());
+        role.setName(roleReq.name());
+        role.setSort(roleReq.sort());
+        role.setStatus(roleReq.status());
+        role.setDescription(roleReq.description());
         Role save = roleRepository.save(role);
         save.getPermissions().add(permission.get());
         return save;
