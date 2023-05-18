@@ -35,6 +35,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        ResponseUtils.writeErrMsg(response, ErrorCode.UNAUTHORIZED);
+        ResponseUtils.writeErrMsg(response, ErrorCode.TOKEN_INVALID);
     }
 }

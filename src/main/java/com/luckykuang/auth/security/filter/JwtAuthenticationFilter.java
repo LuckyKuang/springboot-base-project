@@ -38,6 +38,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.luckykuang.auth.constants.CoreConstants.CAPTCHA_ANSWER;
+import static com.luckykuang.auth.constants.CoreConstants.CAPTCHA_KEY;
+
 /**
  * @author luckykuang
  * @date 2023/4/22 17:55
@@ -56,12 +59,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String servletPath = request.getServletPath();
-        if (servletPath.equals("/auth/v1/sign/login") || servletPath.equals("/auth/v1/sign/refresh")
-                || servletPath.startsWith("/v3/api-docs") || servletPath.startsWith("/swagger-ui")
-                || servletPath.startsWith("/swagger-resources") || servletPath.startsWith("/webjars")
-                || servletPath.startsWith("/doc.html") || servletPath.startsWith("/favicon.ico")) {
-            filterChain.doFilter(request, response);
+        // 登录接口校验
+        if (servletPath.equals("/auth/v1/sign/login")){
+            // 用户输入的验证码
+            String captchaAnswer = request.getHeader(CAPTCHA_ANSWER);
+            // 缓存中的验证码key
+            String captchaKey = request.getHeader(CAPTCHA_KEY);
+            // 查缓存中的验证码
+            Object cacheCaptchaKey = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.CAPTCHA_CACHE_KEY + captchaKey);
+            if (cacheCaptchaKey == null) {
+                ResponseUtils.writeErrMsg(response, ErrorCode.CAPTCHA_TIMEOUT);
+            } else {
+                // 验证码比对
+                if (cacheCaptchaKey.equals(captchaAnswer)) {
+                    filterChain.doFilter(request, response);
+                } else {
+                    ResponseUtils.writeErrMsg(response, ErrorCode.CAPTCHA_ERROR);
+                }
+            }
         }
+        // 其他接口校验
         else {
             String token = RequestUtils.resolveToken(request);
             if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -76,13 +93,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    filterChain.doFilter(request, response);
                 } else {
                     ResponseUtils.writeErrMsg(response, ErrorCode.TOKEN_INVALID);
                 }
-            }else {
-                ResponseUtils.writeErrMsg(response, ErrorCode.TOKEN_INVALID);
             }
+            filterChain.doFilter(request, response);
         }
     }
 }

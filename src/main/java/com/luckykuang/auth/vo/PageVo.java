@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 分页参数
+ * 分页请求参数
  * @author luckykuang
  * @date 2023/4/21 11:44
  */

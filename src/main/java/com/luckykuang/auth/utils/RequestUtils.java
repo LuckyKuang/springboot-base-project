@@ -23,6 +23,7 @@ import static com.luckykuang.auth.constants.CoreConstants.BEARER_HEAD;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
+ * 请求处理工具类
  * @author fankuangyong
  * @date 2023/5/15 14:32
  */

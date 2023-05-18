@@ -20,8 +20,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.security.config.TokenSecretConfig;
+import com.luckykuang.auth.security.properties.TokenSecretProperties;
 import com.luckykuang.auth.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final TokenSecretConfig tokenSecretConfig;
+    private final TokenSecretProperties tokenSecretProperties;
 
     /**
      * 生成验证令牌
@@ -59,7 +60,7 @@ public class JwtTokenProvider {
      * @return AccessToken
      */
     public String generateAccessToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(),tokenSecretConfig.getJwtAccessTokenExpirationDate(),userId);
+        return createToken(authentication.getName(), tokenSecretProperties.getJwtAccessTokenExpirationDate(),userId);
     }
 
     /**
@@ -68,7 +69,7 @@ public class JwtTokenProvider {
      * @return 刷新令牌
      */
     public String generateRefreshToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(),tokenSecretConfig.getJwtRefreshTokenExpirationDate(),userId);
+        return createToken(authentication.getName(), tokenSecretProperties.getJwtRefreshTokenExpirationDate(),userId);
     }
 
     /**
@@ -120,16 +121,16 @@ public class JwtTokenProvider {
             verify = JWT.require(getKey()).build().verify(token);
         } catch (AlgorithmMismatchException e){
             log.warn("令牌非法：[{}]",token);
-            throw new BusinessException("令牌非法");
+            throw new BusinessException(ErrorCode.TOKEN_ILLEGAL);
         } catch (SignatureVerificationException e){
-            log.warn("令牌无效：[{}]",token);
-            throw new BusinessException("令牌无效");
+            log.warn("令牌验证失败：[{}]",token);
+            throw new BusinessException(ErrorCode.TOKEN_VERIFICATION_FAILED);
         } catch (TokenExpiredException e){
-            log.warn("令牌已过期：[{}]",token);
-            throw new BusinessException("令牌已过期");
+            log.info("令牌已过期：[{}]",token);
+            throw new BusinessException(ErrorCode.TOKEN_INVALID);
         } catch (IncorrectClaimException e){
             log.warn("令牌不正确：[{}]",token);
-            throw new BusinessException("令牌不正确");
+            throw new BusinessException(ErrorCode.TOKEN_INCORRECT);
         }
         return verify;
     }
@@ -152,7 +153,7 @@ public class JwtTokenProvider {
                     .sign(getKey());
         } catch (JWTCreationException e){
             log.error("令牌创建异常 -> 用户名：[{}]",userName,e);
-            throw new BusinessException("令牌创建异常");
+            throw new BusinessException(ErrorCode.TOKEN_CREATE_EXCEPTION);
         }
         return sign;
     }
@@ -162,6 +163,6 @@ public class JwtTokenProvider {
      * 生产环境建议修改成RSA加密
      */
     private Algorithm getKey(){
-        return Algorithm.HMAC256(tokenSecretConfig.getJwtSecret());
+        return Algorithm.HMAC256(tokenSecretProperties.getJwtSecret());
     }
 }

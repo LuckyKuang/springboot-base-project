@@ -18,21 +18,16 @@ package com.luckykuang.auth.security.config;
 
 import com.luckykuang.auth.security.exception.JwtAccessDeniedHandler;
 import com.luckykuang.auth.security.exception.JwtAuthenticationEntryPoint;
-import com.luckykuang.auth.security.filter.CaptchaFilter;
 import com.luckykuang.auth.security.filter.JwtAuthenticationFilter;
-import com.luckykuang.auth.security.userdetails.LoginUserDetailsService;
+import com.luckykuang.auth.security.properties.CorsProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +38,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.time.Duration;
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 
@@ -58,13 +52,8 @@ import static java.util.Collections.singletonList;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("#{'${app.cors-urls}'.split(',')}")
-    private List<String> corsUrls;
-    @Value("#{'${app.cors-methods}'.split(',')}")
-    private List<String> corsMethods;
+    private final CorsProperties corsProperties;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final LoginUserDetailsService userDetailsService;
-//    private final LogoutHandler logoutHandler;
 
 
     /**
@@ -76,49 +65,30 @@ public class SecurityConfig {
                 // 禁用csrf，防止跨站伪造
                 .csrf().disable()
                 // 跨域配置
-//                .cors(cors-> cors
-//                        // 自定义跨域配置
-//                        .configurationSource(corsConfigurationSource()))
+                .cors(cors-> cors
+                        // 自定义跨域配置
+                        .configurationSource(corsConfigurationSource()))
                 // jwt是无状态的，不需要session
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 过滤配置
                 .authorizeHttpRequests(authorize -> authorize
-                        // 登录和刷新令牌放行
-                        .requestMatchers("/auth/v1/sign/login").permitAll()
-                        .requestMatchers("/auth/v1/sign/refresh").permitAll()
+                        // 接口放行,也可以配置Bean容器WebSecurityCustomizer来过滤
+                        .requestMatchers("/auth/v1/sign/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**","/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-resources/**","/webjars/**").permitAll()
+                        .requestMatchers("/doc.html","/favicon.ico").permitAll()
+                        // 其他接口必须验证
                         .anyRequest().authenticated()
                 )
-                // 验证码过滤器校验
-//                .addFilterBefore(new CaptchaFilter(),UsernamePasswordAuthenticationFilter.class)
-                // jwt认证
-//                .authenticationProvider(authenticationProvider())
                 // jwt过滤器校验
-//                .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class)
                 // 异常处理
                 .exceptionHandling(exceptions -> exceptions
                         // 未登录自定义处理
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                        // 没权限自定义处理
                         .accessDeniedHandler(new JwtAccessDeniedHandler()));
-        http.addFilterBefore(new CaptchaFilter(),UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    /**
-     * Security 忽略资源路径
-     */
-    @Bean
-    public WebSecurityCustomizer ignoringCustomizer() {
-        return web -> web.ignoring()
-                .requestMatchers(
-                        "/auth/v1/sign/getCaptcha",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-                        "/doc.html");
     }
 
     /**
@@ -126,17 +96,6 @@ public class SecurityConfig {
      */
     @Bean public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    /**
-     * 身份验证
-     */
-    @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
     }
 
     /**
@@ -154,8 +113,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true); // 用户凭证
-        configuration.setAllowedOrigins(corsUrls); // 请求url
-        configuration.setAllowedMethods(corsMethods); // 请求方法
+        configuration.setAllowedOrigins(corsProperties.getCorsUrls()); // 请求url
+        configuration.setAllowedMethods(corsProperties.getCorsMethods()); // 请求方法
         configuration.setAllowedHeaders(singletonList("*")); // 请求头
         configuration.setMaxAge(Duration.ofHours(1)); // 客户端缓存时间
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

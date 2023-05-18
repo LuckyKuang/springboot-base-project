@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.vo;
+package com.luckykuang.auth.security.properties;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * 分页响应参数
- * @author luckykuang
- * @date 2023/5/6 14:25
+ * jwt配置
+ * @author fankuangyong
+ * @date 2023/5/17 14:09
  */
 @Getter
 @Setter
-public class PageResultVo<T> extends PageVo{
-    /**
-     * 总分页数
-     */
-    @Schema(description = "总分页数")
-    private Integer totalPages;
-
-    /**
-     * 总记录数
-     */
-    @Schema(description = "总记录数")
-    private long totalElements;
-
-    /**
-     * 分页数据
-     */
-    @Schema(description = "分页数据")
-    private List<T> content;
+@Configuration
+public class TokenSecretProperties {
+    @Value("${app.jwt-secret:luckykuang}")
+    private String jwtSecret;
+    @Value("${app.jwt-expiration.access-token-milliseconds:10000}")
+    private long jwtAccessTokenExpirationDate;
+    @Value("${app.jwt-expiration.refresh-token-milliseconds:100000}")
+    private long jwtRefreshTokenExpirationDate;
 }

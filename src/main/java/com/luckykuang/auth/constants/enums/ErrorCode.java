@@ -25,13 +25,16 @@ public enum ErrorCode {
     SUCCESS(200,"操作成功"),
     UNKNOWN(9999,"操作失败"),
     BAD_REQUEST(400,"请求参数不正确"),
-    UNAUTHORIZED(401, "认证已失效"),
-    TOKEN_INVALID(402, "token已过期"),
-    FORBIDDEN(403, "没有该操作权限"),
+    TOKEN_INVALID(401, "Token已过期"),
+    FORBIDDEN(403, "无权限访问"),
     NOT_FOUND_REQUEST(404, "请求未找到"),
     METHOD_NOT_ALLOWED_REQUEST(405, "请求方法不正确"),
     BODY_NOT_ALLOWED_REQUEST(406, "请求体不正确"),
-    TOKEN_IS_EMPTY(407, "token为空"),
+    TOKEN_IS_EMPTY(407, "Token为空"),
+    TOKEN_ILLEGAL(408, "Token非法"),
+    TOKEN_VERIFICATION_FAILED(409, "Token验证失败"),
+    TOKEN_INCORRECT(410, "Token不正确"),
+    TOKEN_CREATE_EXCEPTION(410, "Token创建异常"),
     FAILED_REQUEST(423, "请求失败，请稍后重试"),
     TOO_MANY_REQUESTS(429, "请求过于频繁，请稍后重试"),
     INTERNAL_SERVER_ERROR(500, "系统异常，请联系管理员"),
@@ -57,6 +60,7 @@ public enum ErrorCode {
     DEPT_NOT_EXIST(1016,"部门不存在"),
     CAPTCHA_TIMEOUT(1017, "验证码已过期"),
     CAPTCHA_ERROR(1018, "验证码错误"),
+    CAPTCHA_CONFIG_ERROR(1019, "验证码配置信息有无,请联系管理员!"),
     ;
     private final Integer code;
     private final String message;

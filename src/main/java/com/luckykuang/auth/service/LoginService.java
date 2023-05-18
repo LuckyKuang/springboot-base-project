@@ -14,37 +14,25 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.vo;
+package com.luckykuang.auth.service;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import com.luckykuang.auth.base.ApiResult;
+import com.luckykuang.auth.request.LoginReq;
+import com.luckykuang.auth.request.RefreshReq;
+import com.luckykuang.auth.response.CaptchaRsp;
+import com.luckykuang.auth.response.TokenRsp;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * 分页响应参数
- * @author luckykuang
- * @date 2023/5/6 14:25
+ * @author fankuangyong
+ * @date 2023/5/18 17:13
  */
-@Getter
-@Setter
-public class PageResultVo<T> extends PageVo{
-    /**
-     * 总分页数
-     */
-    @Schema(description = "总分页数")
-    private Integer totalPages;
+public interface LoginService {
 
-    /**
-     * 总记录数
-     */
-    @Schema(description = "总记录数")
-    private long totalElements;
+    ApiResult<TokenRsp> login(LoginReq loginReq);
 
-    /**
-     * 分页数据
-     */
-    @Schema(description = "分页数据")
-    private List<T> content;
+    ApiResult<TokenRsp> refresh(RefreshReq refreshReq);
+
+    ApiResult<Void> logout(HttpServletRequest request);
+    CaptchaRsp getCaptcha();;
 }

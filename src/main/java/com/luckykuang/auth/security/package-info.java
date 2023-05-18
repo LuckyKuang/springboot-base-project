@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.security.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-
 /**
+ * 放置 Spring Security 的所有配置
  * @author fankuangyong
- * @date 2023/5/17 14:09
+ * @date 2023/5/18 16:39
  */
-@Getter
-@Setter
-@Configuration
-public class TokenSecretConfig {
-    @Value("${app.jwt-secret:luckykuang}")
-    private String jwtSecret;
-    @Value("${app.jwt-expiration.access-token-milliseconds:10000}")
-    private long jwtAccessTokenExpirationDate;
-    @Value("${app.jwt-expiration.refresh-token-milliseconds:100000}")
-    private long jwtRefreshTokenExpirationDate;
-}
+package com.luckykuang.auth.security;

@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.vo;
+package com.luckykuang.auth.security.properties;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 /**
- * 分页响应参数
- * @author luckykuang
- * @date 2023/5/6 14:25
+ * cors配置
+ * @author fankuangyong
+ * @date 2023/5/18 17:03
  */
 @Getter
 @Setter
-public class PageResultVo<T> extends PageVo{
-    /**
-     * 总分页数
-     */
-    @Schema(description = "总分页数")
-    private Integer totalPages;
-
-    /**
-     * 总记录数
-     */
-    @Schema(description = "总记录数")
-    private long totalElements;
-
-    /**
-     * 分页数据
-     */
-    @Schema(description = "分页数据")
-    private List<T> content;
+@Configuration
+public class CorsProperties {
+    @Value("#{'${app.cors-urls}'.split(',')}")
+    private List<String> corsUrls;
+    @Value("#{'${app.cors-methods}'.split(',')}")
+    private List<String> corsMethods;
 }

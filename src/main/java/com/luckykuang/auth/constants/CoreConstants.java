@@ -52,4 +52,6 @@ public interface CoreConstants {
 
     String ROLE_UNDERLINE = ROLE + UNDERLINE;
 
+    String CAPTCHA_ANSWER = "captchaAnswer";
+    String CAPTCHA_KEY = "captchaKey";
 }

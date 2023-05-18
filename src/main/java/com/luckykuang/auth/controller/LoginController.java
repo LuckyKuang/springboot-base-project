@@ -21,7 +21,7 @@ import com.luckykuang.auth.request.LoginReq;
 import com.luckykuang.auth.request.RefreshReq;
 import com.luckykuang.auth.response.CaptchaRsp;
 import com.luckykuang.auth.response.TokenRsp;
-import com.luckykuang.auth.service.UserService;
+import com.luckykuang.auth.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,29 +39,29 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class LoginController {
 
-    private final UserService userService;
+    private final LoginService loginService;
 
     @Operation(summary = "登录")
     @PostMapping("login")
     public ApiResult<TokenRsp> login(@RequestBody @Validated LoginReq loginReq){
-        return userService.login(loginReq);
+        return loginService.login(loginReq);
     }
 
     @Operation(summary = "退出登录")
     @DeleteMapping("logout")
     public ApiResult<Void> logout(HttpServletRequest request){
-        return userService.logout(request);
+        return loginService.logout(request);
     }
 
     @Operation(summary = "刷新令牌")
     @PostMapping("refresh")
     public ApiResult<TokenRsp> refresh(@RequestBody @Validated RefreshReq refreshReq) {
-        return userService.refresh(refreshReq);
+        return loginService.refresh(refreshReq);
     }
 
     @Operation(summary = "获取验证码")
     @GetMapping("getCaptcha")
     public ApiResult<CaptchaRsp> getCaptcha() {
-        return ApiResult.success(userService.getCaptcha());
+        return ApiResult.success(loginService.getCaptcha());
     }
 }

@@ -16,16 +16,10 @@
 
 package com.luckykuang.auth.service;
 
-import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.request.RefreshReq;
 import com.luckykuang.auth.request.UserReq;
-import com.luckykuang.auth.response.CaptchaRsp;
-import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -42,17 +36,9 @@ public interface UserService {
 
     List<User> getUsers();
 
-    ApiResult<TokenRsp> login(LoginReq loginReq);
-
     PageResultVo<User> getUserByPage(PageVo page);
 
     User updateUser(Long id, UserReq userReq);
 
     void delUser(Long id);
-
-    ApiResult<TokenRsp> refresh(RefreshReq refreshReq);
-
-    CaptchaRsp getCaptcha();
-
-    ApiResult<Void> logout(HttpServletRequest request);
 }

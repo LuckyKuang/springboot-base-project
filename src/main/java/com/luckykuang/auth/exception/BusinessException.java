@@ -19,12 +19,16 @@ package com.luckykuang.auth.exception;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import lombok.Getter;
 
+import java.io.Serial;
+
 /**
  * @author luckykuang
  * @date 2023/4/21 15:12
  */
 @Getter
 public class BusinessException extends RuntimeException{
+    @Serial
+    private static final long serialVersionUID = -8667285044038283509L;
     /**
      * 错误码
      */
@@ -38,11 +42,5 @@ public class BusinessException extends RuntimeException{
         super();
         this.code = errorCode.getCode();
         this.message = errorCode.getMessage();
-    }
-
-    public BusinessException(String message){
-        super();
-        this.code = ErrorCode.INTERNAL_SERVER_ERROR.getCode();
-        this.message = message;
     }
 }

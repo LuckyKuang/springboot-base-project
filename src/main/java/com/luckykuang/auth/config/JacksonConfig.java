@@ -29,6 +29,7 @@ import com.luckykuang.auth.utils.DateUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -50,6 +51,7 @@ public class JacksonConfig {
         // Long类型转String类型，解决精度丢失问题
         javaTimeModule.addSerializer(Long.class, ToStringSerializer.instance);
         javaTimeModule.addSerializer(Long.TYPE,ToStringSerializer.instance);
+        javaTimeModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
 
         // String转LocalDateTime
         // 序列化

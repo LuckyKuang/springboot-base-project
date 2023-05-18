@@ -24,8 +24,11 @@ public class ResponseUtils {
      */
     public static void writeErrMsg(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         switch (errorCode) {
-            case UNAUTHORIZED,TOKEN_INVALID -> response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            // token已过期
+            case TOKEN_INVALID -> response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            // 没有权限
             case FORBIDDEN -> response.setStatus(HttpStatus.FORBIDDEN.value());
+            // 其他异常
             default -> response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

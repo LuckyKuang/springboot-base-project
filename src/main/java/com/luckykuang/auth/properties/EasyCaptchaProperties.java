@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.config;
+package com.luckykuang.auth.properties;
 
 import com.luckykuang.auth.constants.enums.CaptchaTypeEnum;
 import lombok.Getter;
@@ -32,7 +32,7 @@ import java.awt.*;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "easy-captcha")
-public class EasyCaptchaConfig {
+public class EasyCaptchaProperties {
 
     /**
      * 验证码类型

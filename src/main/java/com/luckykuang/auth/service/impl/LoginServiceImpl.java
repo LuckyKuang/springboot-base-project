@@ -1,0 +1,187 @@
+/*
+ * Copyright 2015-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.luckykuang.auth.service.impl;
+
+import com.luckykuang.auth.base.ApiResult;
+import com.luckykuang.auth.constants.RedisConstants;
+import com.luckykuang.auth.constants.enums.ErrorCode;
+import com.luckykuang.auth.exception.BusinessException;
+import com.luckykuang.auth.model.User;
+import com.luckykuang.auth.properties.EasyCaptchaProperties;
+import com.luckykuang.auth.repository.UserRepository;
+import com.luckykuang.auth.request.LoginReq;
+import com.luckykuang.auth.request.RefreshReq;
+import com.luckykuang.auth.response.CaptchaRsp;
+import com.luckykuang.auth.response.TokenRsp;
+import com.luckykuang.auth.security.properties.TokenSecretProperties;
+import com.luckykuang.auth.security.userdetails.LoginUserDetails;
+import com.luckykuang.auth.security.userdetails.LoginUserDetailsService;
+import com.luckykuang.auth.security.utils.JwtTokenProvider;
+import com.luckykuang.auth.service.LoginService;
+import com.luckykuang.auth.utils.CommonUtils;
+import com.luckykuang.auth.utils.RedisUtils;
+import com.wf.captcha.*;
+import com.wf.captcha.base.Captcha;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.awt.*;
+
+import static com.luckykuang.auth.constants.CoreConstants.BEARER_HEAD;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
+/**
+ * @author fankuangyong
+ * @date 2023/5/18 17:13
+ */
+@Service
+@RequiredArgsConstructor
+public class LoginServiceImpl implements LoginService {
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final RedisUtils redisUtils;
+    private final LoginUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
+    private final TokenSecretProperties tokenSecretProperties;
+    private final EasyCaptchaProperties easyCaptchaProperties;
+
+    @Override
+    public ApiResult<TokenRsp> login(LoginReq loginReq) {
+        LoginReq from = LoginReq.from(loginReq);
+        User user = userRepository.findByUsername(from.username())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                from.username(),
+                from.password()
+        );
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        String accessToken = jwtTokenProvider.generateAccessToken(authenticate,String.valueOf(user.getId()));
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authenticate,String.valueOf(user.getId()));
+        // 加入redis缓存
+        redisUtils.set(
+                RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
+                user.getId(),
+                tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
+        );
+        return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
+    }
+
+    @Override
+    public ApiResult<TokenRsp> refresh(RefreshReq refreshReq) {
+        String bearerToken = refreshReq.refreshToken();
+        String accessToken;
+        String refreshToken;
+        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
+            return ApiResult.success(TokenRsp.from(null, null));
+        }
+        String token = bearerToken.substring(BEARER_HEAD.length());
+        String username = jwtTokenProvider.getUsername(token);
+        if (username != null) {
+            LoginUserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (Boolean.TRUE.equals(jwtTokenProvider.validateToken(token,userDetails))){
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                accessToken = jwtTokenProvider.generateAccessToken(authToken,String.valueOf(userDetails.getUserId()));
+                refreshToken = jwtTokenProvider.generateRefreshToken(authToken,String.valueOf(userDetails.getUserId()));
+                // 加入redis缓存
+                redisUtils.set(
+                        RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
+                        userDetails.getUserId(),
+                        tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
+                );
+                return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
+            }
+        }
+        return ApiResult.success(TokenRsp.from(null, null));
+    }
+
+    @Override
+    public ApiResult<Void> logout(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION);
+        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
+            return ApiResult.failed(ErrorCode.BAD_REQUEST);
+        }
+        String token = bearerToken.substring(BEARER_HEAD.length());
+        // 删除redis缓存
+        redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+        // 清除security缓存
+        SecurityContextHolder.clearContext();
+        return ApiResult.success();
+    }
+
+    @Override
+    public CaptchaRsp getCaptcha() {
+        // 生成验证码
+        Captcha captcha = generateCaptcha();
+        String captchaText = captcha.text(); // 验证码文本
+        String captchaBase64 = captcha.toBase64(); // 验证码图片Base64字符串
+
+        String captchaKey = CommonUtils.getUUID(true);
+        // 验证码文本缓存至Redis，用于登录校验
+        redisUtils.set(
+                RedisConstants.REDIS_HEAD + RedisConstants.CAPTCHA_CACHE_KEY + captchaKey,
+                captchaText,
+                easyCaptchaProperties.getTtl());
+
+        return CaptchaRsp.from(captchaKey, captchaBase64);
+    }
+
+    private Captcha generateCaptcha() {
+        Captcha captcha;
+        int width = easyCaptchaProperties.getWidth();
+        int height = easyCaptchaProperties.getHeight();
+        int length = easyCaptchaProperties.getLength();
+        String fontName = easyCaptchaProperties.getFontName();
+
+        switch (easyCaptchaProperties.getType()) {
+            case ARITHMETIC -> {
+                captcha = new ArithmeticCaptcha(width, height);
+                //固定设置为两位，图片为算数运算表达式
+                captcha.setLen(2);
+            }
+            case CHINESE -> {
+                captcha = new ChineseCaptcha(width, height);
+                captcha.setLen(length);
+            }
+            case CHINESE_GIF -> {
+                captcha = new ChineseGifCaptcha(width, height);
+                captcha.setLen(length);
+            }
+            case GIF -> {
+                captcha = new GifCaptcha(width, height);//最后一位是位数
+                captcha.setLen(length);
+            }
+            case SPEC -> {
+                captcha = new SpecCaptcha(width, height);
+                captcha.setLen(length);
+            }
+            default -> throw new BusinessException(ErrorCode.CAPTCHA_CONFIG_ERROR);
+        }
+        captcha.setFont(new Font(fontName, easyCaptchaProperties.getFontStyle(), easyCaptchaProperties.getFontSize()));
+        return captcha;
+    }
+}

@@ -18,19 +18,17 @@ package com.luckykuang.auth.exception;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.enums.ErrorCode;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * 全局异常处理
@@ -85,7 +83,29 @@ public class DefaultExceptionHandler {
     }
 
     /**
-     * 处理业务异常 参见 {@link BusinessException}
+     * 处理 Spring Security 用户名或密码错误
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public ApiResult<?> badCredentialsExceptionHandler(BadCredentialsException ex) {
+        log.info("[badCredentialsExceptionHandler]:{}", ex.getMessage());
+        return ApiResult.failed(ErrorCode.USERNAME_AND_PASSWORD_IS_ERROR);
+    }
+
+    /**
+     * 处理 Spring Security 无权限访问
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ApiResult<?> accessDeniedExceptionHandler(AccessDeniedException ex) {
+        log.info("[accessDeniedExceptionHandler]:{}", ex.getMessage());
+        return ApiResult.failed(ErrorCode.FORBIDDEN);
+    }
+
+    /**
+     * 处理业务异常 参见 {@link ErrorCode}
      *
      */
     @ExceptionHandler(value = BusinessException.class)
@@ -98,18 +118,7 @@ public class DefaultExceptionHandler {
      * 兜底所有异常处理
      */
     @ExceptionHandler(value = Exception.class)
-    public ApiResult<?> defaultExceptionHandler(HttpServletRequest request, Exception ex) {
-        String token = request.getHeader(AUTHORIZATION);
-        String name = ex.getClass().getName();
-        String exceptionName = "";
-        if (StringUtils.isNotBlank(name)){
-            exceptionName = name.substring(name.lastIndexOf(".") + 1);
-        }
-        // security异常：拒绝访问
-        if ("AccessDeniedException".equals(exceptionName)){
-            log.warn("[AccessDeniedException]:token:{},issue:{}", token, ex.getMessage());
-            return ApiResult.failed(ErrorCode.FORBIDDEN);
-        }
+    public ApiResult<?> defaultExceptionHandler(Exception ex) {
         log.error("[defaultExceptionHandler]", ex);
         return ApiResult.failed(ErrorCode.INTERNAL_SERVER_ERROR);
     }
