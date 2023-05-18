@@ -19,7 +19,6 @@ package com.luckykuang.auth.security.config;
 import com.luckykuang.auth.security.exception.JwtAccessDeniedHandler;
 import com.luckykuang.auth.security.exception.JwtAuthenticationEntryPoint;
 import com.luckykuang.auth.security.filter.JwtAuthenticationFilter;
-import com.luckykuang.auth.security.properties.CorsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,9 +51,7 @@ import static java.util.Collections.singletonList;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CorsProperties corsProperties;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
 
     /**
      * 安全校验
@@ -113,8 +110,8 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true); // 用户凭证
-        configuration.setAllowedOrigins(corsProperties.getCorsUrls()); // 请求url
-        configuration.setAllowedMethods(corsProperties.getCorsMethods()); // 请求方法
+        configuration.setAllowedOriginPatterns(singletonList("*"));
+        configuration.setAllowedMethods(singletonList("*")); // 请求方法
         configuration.setAllowedHeaders(singletonList("*")); // 请求头
         configuration.setMaxAge(Duration.ofHours(1)); // 客户端缓存时间
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

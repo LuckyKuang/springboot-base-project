@@ -42,8 +42,8 @@ public class LoginController {
     private final LoginService loginService;
 
     @Operation(summary = "登录")
-    @PostMapping("login")
-    public ApiResult<TokenRsp> login(@RequestBody @Validated LoginReq loginReq){
+    @GetMapping("login")
+    public ApiResult<TokenRsp> login(LoginReq loginReq){
         return loginService.login(loginReq);
     }
 

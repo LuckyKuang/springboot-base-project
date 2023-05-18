@@ -62,9 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 登录接口校验
         if (servletPath.equals("/auth/v1/sign/login")){
             // 用户输入的验证码
-            String captchaAnswer = request.getHeader(CAPTCHA_ANSWER);
+            String captchaAnswer = request.getParameter(CAPTCHA_ANSWER);
             // 缓存中的验证码key
-            String captchaKey = request.getHeader(CAPTCHA_KEY);
+            String captchaKey = request.getParameter(CAPTCHA_KEY);
             // 查缓存中的验证码
             Object cacheCaptchaKey = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.CAPTCHA_CACHE_KEY + captchaKey);
             if (cacheCaptchaKey == null) {
