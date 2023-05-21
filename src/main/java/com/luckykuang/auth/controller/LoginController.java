@@ -41,9 +41,14 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    /**
+     * 验证码信息通过请求头传入 参见 {@link com.luckykuang.auth.security.filter.JwtAuthenticationFilter}
+     * @param loginReq 只传入username和password
+     * @return
+     */
     @Operation(summary = "登录")
-    @GetMapping("login")
-    public ApiResult<TokenRsp> login(LoginReq loginReq){
+    @PostMapping("login")
+    public ApiResult<TokenRsp> login(@RequestBody @Validated LoginReq loginReq){
         return loginService.login(loginReq);
     }
 

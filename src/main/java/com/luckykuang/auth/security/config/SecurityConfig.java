@@ -105,12 +105,13 @@ public class SecurityConfig {
 
     /**
      * Security 自定义跨域配置
+     * 也可以通过自定义Filter配置，二者选其一即可
      */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true); // 用户凭证
-        configuration.setAllowedOriginPatterns(singletonList("*"));
+        configuration.setAllowedOriginPatterns(singletonList("*")); // 请求url
         configuration.setAllowedMethods(singletonList("*")); // 请求方法
         configuration.setAllowedHeaders(singletonList("*")); // 请求头
         configuration.setMaxAge(Duration.ofHours(1)); // 客户端缓存时间
