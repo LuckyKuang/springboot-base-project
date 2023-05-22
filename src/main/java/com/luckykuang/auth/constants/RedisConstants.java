@@ -33,4 +33,6 @@ public interface RedisConstants {
     String REFRESH_TOKEN = "refreshToken" + CO;
 
     String CAPTCHA_CACHE_KEY = "CaptchaKey" + CO;
+
+    String USER_MENU_KEY = "" + CO;
 }

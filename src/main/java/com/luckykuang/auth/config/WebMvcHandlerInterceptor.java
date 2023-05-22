@@ -45,8 +45,8 @@ public class WebMvcHandlerInterceptor implements HandlerInterceptor {
             return false;
         }
         String token = bearerToken.substring(BEARER_HEAD.length());
-        String userId = jwtTokenProvider.getUserId(token);
-        RequestContext.setUserId(Long.valueOf(userId));
+        Long userId = jwtTokenProvider.getUserId(token);
+        RequestContext.setUserId(userId);
         RequestContext.setToken(token);
         return true;
     }

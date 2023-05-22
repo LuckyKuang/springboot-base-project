@@ -23,6 +23,7 @@ import com.luckykuang.auth.vo.PageVo;
 import com.luckykuang.auth.vo.UserDetailsVo;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author luckykuang
@@ -33,7 +34,7 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    User getUserByUsername(String username);
+    Optional<User> getUserByUsername(String username);
 
     List<User> getUsers();
 

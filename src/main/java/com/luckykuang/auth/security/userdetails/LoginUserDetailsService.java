@@ -40,15 +40,7 @@ public class LoginUserDetailsService implements UserDetailsService {
      */
     @Override
     public LoginUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetailsVo user = userService.getUserDetails(username);
-        return new LoginUserDetails(
-                user.getUserId(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getDeptId(),
-                user.getDataScope(),
-                user.getRoles(),
-                user.getMenus()
-        );
+        UserDetailsVo userDetailsVo = userService.getUserDetails(username);
+        return new LoginUserDetails(userDetailsVo);
     }
 }

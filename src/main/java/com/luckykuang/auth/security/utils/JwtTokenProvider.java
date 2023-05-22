@@ -20,17 +20,26 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
+import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.security.properties.TokenSecretProperties;
+import com.luckykuang.auth.security.userdetails.LoginUserDetails;
 import com.luckykuang.auth.utils.CommonUtils;
+import com.luckykuang.auth.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * jwt有以下7个官方字段供选择:
@@ -43,6 +52,12 @@ import java.util.Date;
  *      jti(jwt id)：编号
  * jwt预留自定义参数：
  *      Claim(String name, Object value)
+ * 本系统设计：
+ *      sub -> username 用户名
+ *      Claim(userId, value) -> userId 用户id
+ *      Claim(deptId, value) -> deptId 部门id
+ *      Claim(dataScope, value) -> dataScope 数据权限
+ *      Claim(authorities, value) -> authorities 角色
  *
  * @author luckykuang
  * @date 2023/4/22 17:57
@@ -53,14 +68,15 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final TokenSecretProperties tokenSecretProperties;
+    private final RedisUtils redisUtils;
 
     /**
      * 生成验证令牌
      * @param authentication
      * @return AccessToken
      */
-    public String generateAccessToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(), tokenSecretProperties.getJwtAccessTokenExpirationDate(),userId);
+    public String generateAccessToken(Authentication authentication){
+        return createToken(authentication, tokenSecretProperties.getJwtAccessTokenExpirationDate());
     }
 
     /**
@@ -68,8 +84,8 @@ public class JwtTokenProvider {
      * @param authentication
      * @return 刷新令牌
      */
-    public String generateRefreshToken(Authentication authentication,String userId){
-        return createToken(authentication.getName(), tokenSecretProperties.getJwtRefreshTokenExpirationDate(),userId);
+    public String generateRefreshToken(Authentication authentication){
+        return createToken(authentication, tokenSecretProperties.getJwtRefreshTokenExpirationDate());
     }
 
     /**
@@ -77,8 +93,8 @@ public class JwtTokenProvider {
      * @param token
      * @return
      */
-    public String getUserId(String token){
-        return getDecodedJWT(token).getIssuer();
+    public Long getUserId(String token){
+        return getDecodedJWT(token).getClaim("userId").asLong();
     }
 
     /**
@@ -135,24 +151,65 @@ public class JwtTokenProvider {
         return verify;
     }
 
+    /**
+     * 获取认证信息
+     * @param token
+     * @return
+     */
+    public Authentication getAuthentication(String token){
+
+        Object accessCacheToken = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+        // token 过期
+        if (accessCacheToken == null){
+            throw new BusinessException(ErrorCode.TOKEN_INVALID);
+        }
+
+        Boolean tokenExpired = isTokenExpired(token);
+        // token 过期
+        if (Boolean.TRUE.equals(tokenExpired)){
+            throw new BusinessException(ErrorCode.TOKEN_INVALID);
+        }
+
+        LoginUserDetails principal = new LoginUserDetails();
+
+        DecodedJWT decodedJWT = getDecodedJWT(token);
+        principal.setUserId(decodedJWT.getClaim("userId").asLong());
+        principal.setUsername(decodedJWT.getSubject());
+        principal.setDeptId(decodedJWT.getClaim("deptId").asLong());
+        principal.setDataScope(decodedJWT.getClaim("dataScope").asInt());
+
+        List<SimpleGrantedAuthority> authorities = decodedJWT.getClaim("authorities").asList(String.class)
+                .stream().map(SimpleGrantedAuthority::new)
+                .toList();
+        return new UsernamePasswordAuthenticationToken(principal, null,authorities);
+    }
+
     private Boolean isTokenExpired(String token) {
         return getJwtExpirationDate(token).before(new Date());
     }
 
-    private String createToken(String userName,
-                               long jwtExpirationDate,
-                               String userId) {
+    private String createToken(Authentication authentication, long jwtExpirationDate) {
         String sign;
         try {
+            LoginUserDetails principal = (LoginUserDetails) authentication.getPrincipal();
+            List<String> roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+            // 菜单权限放入缓存
+            Set<Menu> menus = principal.getMenus();
+            redisUtils.set(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + principal.getUserId(),menus);
+
             sign = JWT.create()
                     .withJWTId(CommonUtils.getUUID(true))
-                    .withSubject(userName)
-                    .withIssuer(String.valueOf(userId))
+                    .withSubject(authentication.getName()) // username
                     .withIssuedAt(new Date(System.currentTimeMillis()))
                     .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationDate))
+                    .withClaim("userId",principal.getUserId())
+                    .withClaim("deptId",principal.getDeptId())
+                    .withClaim("dataScope",principal.getDataScope())
+                    .withClaim("authorities",roles)
                     .sign(getKey());
         } catch (JWTCreationException e){
-            log.error("令牌创建异常 -> 用户名：[{}]",userName,e);
+            log.error("令牌创建异常 -> 用户名：[{}]",authentication.getName(),e);
             throw new BusinessException(ErrorCode.TOKEN_CREATE_EXCEPTION);
         }
         return sign;

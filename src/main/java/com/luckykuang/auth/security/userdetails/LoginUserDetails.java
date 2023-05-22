@@ -17,8 +17,7 @@
 package com.luckykuang.auth.security.userdetails;
 
 import com.luckykuang.auth.model.Menu;
-import com.luckykuang.auth.model.Role;
-import lombok.AllArgsConstructor;
+import com.luckykuang.auth.vo.UserDetailsVo;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,13 +29,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.luckykuang.auth.constants.CoreConstants.ROLE_UNDERLINE;
+
 /**
  * @author luckykuang
  * @date 2023/5/5 10:36
  */
 @Getter
 @Setter
-@AllArgsConstructor
 public class LoginUserDetails implements UserDetails {
 
     @Serial
@@ -58,18 +58,29 @@ public class LoginUserDetails implements UserDetails {
     /**
      * 角色
      */
-    private Set<Role> roles;
+    private Collection<SimpleGrantedAuthority> authorities;
     /**
      * 菜单权限
      */
     private Set<Menu> menus;
 
+    public LoginUserDetails(){}
+
+    public LoginUserDetails(UserDetailsVo userDetailsVo){
+        this.userId = userDetailsVo.getUserId();
+        this.username = userDetailsVo.getUsername();
+        this.password = userDetailsVo.getPassword();
+        this.deptId = userDetailsVo.getDeptId();
+        this.dataScope = userDetailsVo.getDataScope();
+        this.authorities = userDetailsVo.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(ROLE_UNDERLINE + role))
+                .collect(Collectors.toSet());
+        this.menus = userDetailsVo.getMenus();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getCode()))
-                .collect(Collectors.toSet());
+        return authorities;
     }
 
     @Override
