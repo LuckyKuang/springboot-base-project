@@ -27,6 +27,8 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 用户表
@@ -90,22 +92,10 @@ public class User extends BaseParam {
     @Schema(description = "用户状态 1-启用 0-禁用",allowableValues = {"1", "0"})
     private Integer status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Role role;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Dept dept;
-
-    @Override
-    public String toString() {
-        return "User{" + super.toString() +
-                ", name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", status=" + status +
-                ", role=" + role +
-                ", dept=" + dept +
-                '}';
-    }
 }

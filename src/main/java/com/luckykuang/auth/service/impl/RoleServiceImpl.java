@@ -18,9 +18,7 @@ package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Permission;
 import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.repository.PermissionRepository;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.request.RoleReq;
 import com.luckykuang.auth.service.RoleService;
@@ -46,7 +44,6 @@ import java.util.Optional;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-    private final PermissionRepository permissionRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -86,10 +83,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private Role saveRole(Long id, RoleReq roleReq) {
-        Optional<Permission> permission = permissionRepository.findById(roleReq.permissionId());
-        if (permission.isEmpty()){
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
         Role role = new Role();
         role.setId(id);
         role.setCode(roleReq.code());
@@ -97,9 +90,7 @@ public class RoleServiceImpl implements RoleService {
         role.setSort(roleReq.sort());
         role.setStatus(roleReq.status());
         role.setDescription(roleReq.description());
-        Role save = roleRepository.save(role);
-        save.getPermissions().add(permission.get());
-        return save;
+        return roleRepository.save(role);
     }
 
     @Override

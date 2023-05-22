@@ -18,9 +18,12 @@ package com.luckykuang.auth.repository;
 
 import com.luckykuang.auth.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author luckykuang
@@ -31,4 +34,16 @@ public interface RoleRepository extends JpaRepository<Role,Long> {
     Optional<Role> findByCodeOrName(String code, String name);
 
     Optional<Role> findByIdIsNotAndCodeOrName(Long id, String code, String name);
+
+    /**
+     * data_scope 值越小，权限越大
+     * 参见 {@link Role} 中的dateScope字段注释
+     * @param roleIds
+     * @return
+     */
+    @Query(
+            nativeQuery = true,
+            value = "select min(r.data_scope) from ky_role r where r.id in (:roleIds)"
+    )
+    Integer findMaxDataScope(@Param("roleIds") Set<Long> roleIds);
 }

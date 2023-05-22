@@ -46,7 +46,7 @@ public enum ErrorCode {
     PHONE_EXIST(1002,"手机号码已存在"),
     EMAIL_EXIST(1003,"邮箱已存在"),
     USERNAME_EXIST(1004,"用户名已存在"),
-    USERNAME_NOT_EXIST(1005,"用户不存在"),
+    USERNAME_NOT_EXIST(1005,"用户名不存在"),
     FIELD_EXIST(1006,"字段已存在"),
     ACCOUNT_DISABLE(1007,"账户被禁用"),
     ACCOUNT_LOCKED(1008,"账户被锁定"),

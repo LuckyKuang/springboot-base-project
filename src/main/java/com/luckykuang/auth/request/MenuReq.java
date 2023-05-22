@@ -23,19 +23,19 @@ import jakarta.validation.constraints.NotBlank;
  * @author luckykuang
  * @date 2023/4/21 23:00
  */
-public record PermissionReq(@NotBlank
-                            @Schema(description = "权限编号")
-                            String code,
-                            @NotBlank
-                            @Schema(description = "权限名称")
-                            String name,
-                            @NotBlank
-                            @Schema(description = "描述")
-                            String description) {
-    public static PermissionReq from(PermissionReq permissionReq){
-        return new PermissionReq(
-                permissionReq.code.toLowerCase(),
-                permissionReq.name,
-                permissionReq.description);
+public record MenuReq(@NotBlank
+                      @Schema(description = "权限编号")
+                      String code,
+                      @NotBlank
+                      @Schema(description = "权限名称")
+                      String name,
+                      @NotBlank
+                      @Schema(description = "描述")
+                      String description) {
+    public static MenuReq from(MenuReq menuReq){
+        return new MenuReq(
+                menuReq.code.toLowerCase(),
+                menuReq.name,
+                menuReq.description);
     }
 }

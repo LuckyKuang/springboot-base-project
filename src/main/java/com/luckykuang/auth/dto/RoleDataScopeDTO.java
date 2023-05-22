@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.service;
+package com.luckykuang.auth.dto;
 
-import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.request.RefreshReq;
-import com.luckykuang.auth.response.CaptchaRsp;
-import com.luckykuang.auth.response.TokenRsp;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author fankuangyong
- * @date 2023/5/18 17:13
+ * @date 2023/5/22 15:31
  */
-public interface LoginService {
-
-    ApiResult<TokenRsp> login(LoginReq loginReq);
-
-    ApiResult<TokenRsp> refresh(RefreshReq refreshReq);
-
-    ApiResult<Void> logout(HttpServletRequest request);
-    CaptchaRsp getCaptcha();
+@Getter
+@Setter
+public class RoleDataScopeDTO {
+    private Integer roleId;
+    private Integer dataScope;
 }

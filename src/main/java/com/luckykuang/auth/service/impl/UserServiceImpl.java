@@ -19,6 +19,7 @@ package com.luckykuang.auth.service.impl;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Dept;
+import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.model.Role;
 import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.repository.DeptRepository;
@@ -30,6 +31,7 @@ import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.UserDetailsVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -38,10 +40,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import static com.luckykuang.auth.constants.CoreConstants.ADMIN;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author luckykuang
@@ -105,13 +108,35 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Override
+    public UserDetailsVo getUserDetails(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
+        Set<Role> roles = Optional.ofNullable(user.getRoles())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_NOT_EXIST));
+        Set<Long> roleIds = roles.stream().map(Role::getId).collect(Collectors.toSet());
+        // 获取最大数据权限
+        // data_scope 值越小，权限越大
+        Integer maxDataScope = roleRepository.findMaxDataScope(roleIds);
+
+        // 获取所有的菜单权限
+        Set<Menu> menus = new HashSet<>();
+        roles.forEach(role -> menus.addAll(role.getMenus()));
+
+        UserDetailsVo userDetailsVo = new UserDetailsVo();
+        userDetailsVo.setUserId(user.getId());
+        userDetailsVo.setUsername(user.getUsername());
+        userDetailsVo.setPassword(user.getPassword());
+        userDetailsVo.setDeptId(user.getDept().getId());
+        userDetailsVo.setDataScope(maxDataScope);
+        userDetailsVo.setRoles(roles);
+        userDetailsVo.setMenus(menus);
+        return userDetailsVo;
+    }
+
     private User saveUser(Long id, UserReq userReq) {
         Optional<User> userOptional = userRepository.findByPhone(userReq.phone());
         AssertUtils.isTrue(userOptional.isEmpty(), ErrorCode.PHONE_EXIST);
-        Optional<Role> roleOptional = roleRepository.findById(userReq.roleId());
-        if (roleOptional.isEmpty() || roleOptional.get().getName().equals(ADMIN)){
-            throw new BusinessException(ErrorCode.ROLE_NOT_EXIST);
-        }
         Optional<Dept> deptOptional = deptRepository.findById(userReq.deptId());
         if (deptOptional.isEmpty()){
             throw new BusinessException(ErrorCode.DEPT_NOT_EXIST);
@@ -129,7 +154,6 @@ public class UserServiceImpl implements UserService {
         user.setStatus(userReq.status());
         
         User save = userRepository.save(user);
-        save.setRole(roleOptional.get());
         save.setDept(deptOptional.get());
         return save;
     }

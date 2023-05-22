@@ -14,16 +14,42 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.vo;
 
 import com.luckykuang.auth.model.Menu;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.luckykuang.auth.model.Role;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.Set;
 
 /**
- * @author luckykuang
- * @date 2023/4/20 14:17
+ * @author fankuangyong
+ * @date 2023/5/22 14:34
  */
-@Repository
-public interface MenuRepository extends JpaRepository<Menu,Long> {
+@Getter
+@Setter
+public class UserDetailsVo {
+    /**
+     * 用户id
+     */
+    private Long userId;
+    private String username;
+    private String password;
+    /**
+     * 部门id
+     */
+    private Long deptId;
+    /**
+     * 数据权限 0-全部数据 1-本部门及子部门数据 2-本部门数据 3-本人数据
+     */
+    private Integer dataScope;
+    /**
+     * 角色
+     */
+    private Set<Role> roles;
+    /**
+     * 菜单权限
+     */
+    private Set<Menu> menus;
 }

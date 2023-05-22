@@ -27,16 +27,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serial;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.luckykuang.auth.constants.CoreConstants.ROLE_UNDERLINE;
 
 
 /**
@@ -79,31 +73,19 @@ public class Role extends BaseParam {
     @Schema(description = "描述")
     private String description;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "role")
-    private List<User> users = new ArrayList<>();
+    @NotNull
+    @Column(nullable = false, length = 1)
+    @Schema(description = "数据权限 0-全部数据 1-本部门及子部门数据 2-本部门数据 3-本人数据")
+    private Integer dataScope;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Permission> permissions = new HashSet<>();
+    private Set<Menu> menus = new HashSet<>();
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    public List<SimpleGrantedAuthority> getAuthorities() {
-        var authorities = getPermissions()
-                .stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getCode()))
-                .collect(Collectors.toList());
-        authorities.add(new SimpleGrantedAuthority(ROLE_UNDERLINE + this.code));
-        return authorities;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() +
-                "Role{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", permissions=" + permissions +
-                '}';
-    }
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    public List<SimpleGrantedAuthority> getAuthorities() {
+//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//        authorities.add(new SimpleGrantedAuthority(ROLE_UNDERLINE + this.code));
+//        return authorities;
+//    }
 }

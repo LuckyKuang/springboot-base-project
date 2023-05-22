@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -38,7 +37,6 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@ToString
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseParam implements Serializable {

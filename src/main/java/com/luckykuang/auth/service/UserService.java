@@ -20,6 +20,7 @@ import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.request.UserReq;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.UserDetailsVo;
 
 import java.util.List;
 
@@ -41,4 +42,6 @@ public interface UserService {
     User updateUser(Long id, UserReq userReq);
 
     void delUser(Long id);
+
+    UserDetailsVo getUserDetails(String username);
 }

@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.service;
 
-import com.luckykuang.auth.model.Permission;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.luckykuang.auth.model.Menu;
+import com.luckykuang.auth.request.MenuReq;
+import com.luckykuang.auth.vo.PageResultVo;
+import com.luckykuang.auth.vo.PageVo;
 
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author luckykuang
- * @date 2023/4/20 14:17
+ * @date 2023/4/20 14:18
  */
-@Repository
-public interface PermissionRepository extends JpaRepository<Permission,Long> {
-    Optional<Permission> findByCodeOrName(String code, String name);
+public interface MenuService {
+    Menu addMenu(MenuReq menuReq);
 
-    Optional<Permission> findByIdIsNotAndCodeOrName(Long id, String code, String name);
+    Menu getMenuById(Long id);
+
+    List<Menu> getMenus();
+
+    PageResultVo<Menu> getMenusByPage(PageVo page);
+
+    Menu updateMenu(Long id, MenuReq menuReq);
+
+    void delMenu(Long id);
 }

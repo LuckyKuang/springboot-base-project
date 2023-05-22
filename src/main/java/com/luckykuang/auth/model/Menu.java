@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serial;
 
 /**
- * 菜单表
+ * 菜单权限表
  * @author fankuangyong
  * @date 2023/5/16 17:20
  */
@@ -58,7 +58,7 @@ public class Menu extends BaseParam {
 
     @NotNull
     @Column(nullable = false, length = 1)
-    @Schema(description = "菜单类型 1-菜单目录 2-菜单导航 3-外链 4-权限按钮",allowableValues = {"1","2","3","4"})
+    @Schema(description = "菜单类型 1-菜单目录 2-菜单导航 3-外链 4-按钮",allowableValues = {"1","2","3","4"})
     private Integer type;
 
     @Column(length = 128)

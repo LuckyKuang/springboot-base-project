@@ -54,9 +54,6 @@ public record UserReq(
         @Schema(description = "用户状态 1-启用 0-禁用",allowableValues = {"1", "0"})
         Integer status,
         @NotNull
-        @Schema(description = "角色id")
-        Long roleId,
-        @NotNull
         @Schema(description = "部门id")
         Long deptId) {
     public static UserReq from(UserReq userReq){
@@ -69,7 +66,6 @@ public record UserReq(
                 userReq.password,
                 userReq.avatar,
                 userReq.status,
-                userReq.roleId,
                 userReq.deptId);
     }
 }

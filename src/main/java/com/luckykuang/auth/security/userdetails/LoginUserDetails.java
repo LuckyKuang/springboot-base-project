@@ -16,15 +16,19 @@
 
 package com.luckykuang.auth.security.userdetails;
 
+import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author luckykuang
@@ -37,15 +41,35 @@ public class LoginUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = -8218935861136040887L;
+    /**
+     * 用户id
+     */
     private Long userId;
     private String username;
     private String password;
-
-    private Role role;
+    /**
+     * 部门id
+     */
+    private Long deptId;
+    /**
+     * 数据权限 0-全部数据 1-本部门及子部门数据 2-本部门数据 3-本人数据
+     */
+    private Integer dataScope;
+    /**
+     * 角色
+     */
+    private Set<Role> roles;
+    /**
+     * 菜单权限
+     */
+    private Set<Menu> menus;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
+        return getRoles()
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getCode()))
+                .collect(Collectors.toSet());
     }
 
     @Override
