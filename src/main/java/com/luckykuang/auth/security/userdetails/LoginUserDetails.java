@@ -73,7 +73,7 @@ public class LoginUserDetails implements UserDetails {
         this.deptId = userDetailsVo.getDeptId();
         this.dataScope = userDetailsVo.getDataScope();
         this.authorities = userDetailsVo.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(ROLE_UNDERLINE + role))
+                .map(role -> new SimpleGrantedAuthority(ROLE_UNDERLINE + role.getCode()))
                 .collect(Collectors.toSet());
         this.menus = userDetailsVo.getMenus();
     }

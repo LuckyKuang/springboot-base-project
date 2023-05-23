@@ -120,28 +120,39 @@
             </exclusions>
         </dependency>
 
+        <!-- 数据库sql脚本自动化 -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
         </dependency>
 
+        <!-- 验证码 -->
         <dependency>
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
             <version>1.6.2</version>
         </dependency>
-
-        <!-- Java8 之后JavaScript引擎nashorn被移除导致验证码解析报错-->
+        <!-- 解决JavaScript引擎中nashorn被移除导致验证码解析时报错 -->
+        <!-- 报错信息：Cannot invoke "javax.script.ScriptEngine.eval(String)" because "engine" is null-->
+        <!-- jdk11标注取消NashornScriptEngineFactory类-->
+        <!-- jdk17正式删除。理由是因为jdk中维护不方便。-->
         <dependency>
             <groupId>org.openjdk.nashorn</groupId>
             <artifactId>nashorn-core</artifactId>
             <version>15.4</version>
         </dependency>
+
+        <!-- jackson 序列化/反序列化 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+
 
         <!-- test dependency -->
         <dependency>

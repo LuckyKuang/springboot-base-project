@@ -20,7 +20,6 @@ import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.properties.EasyCaptchaProperties;
 import com.luckykuang.auth.request.LoginReq;
 import com.luckykuang.auth.request.RefreshReq;
@@ -66,8 +65,8 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public ApiResult<TokenRsp> login(LoginReq loginReq) {
         LoginReq from = LoginReq.from(loginReq);
-        User user = userService.getUserByUsername(from.username())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
+//        User user = userService.getUserByUsername(from.username())
+//                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 from.username(),
                 from.password()

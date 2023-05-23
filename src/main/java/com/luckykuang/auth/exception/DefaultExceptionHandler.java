@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,7 +69,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ApiResult<?> httpRequestMethodNotSupportedExceptionHandler(HttpRequestMethodNotSupportedException ex) {
         log.warn("[httpRequestMethodNotSupportedExceptionHandler]", ex);
-        return ApiResult.failed(ErrorCode.METHOD_NOT_ALLOWED_REQUEST, String.format("请求方法不正确:%s", ex.getMessage()));
+        return ApiResult.failed(ErrorCode.METHOD_NOT_ALLOWED_REQUEST, ex.getMessage());
     }
 
     /**
@@ -79,7 +80,18 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ApiResult<?> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException ex) {
         log.warn("[httpMessageNotReadableExceptionHandler]", ex);
-        return ApiResult.failed(ErrorCode.BODY_NOT_ALLOWED_REQUEST, String.format("请求体不正确:%s", ex.getMessage()));
+        return ApiResult.failed(ErrorCode.BODY_NOT_ALLOWED_REQUEST, ex.getMessage());
+    }
+
+    /**
+     * 处理 Spring Security 用户名不存在
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(value = InternalAuthenticationServiceException.class)
+    public ApiResult<?> internalAuthenticationServiceExceptionHandler(InternalAuthenticationServiceException ex) {
+        log.info("[internalAuthenticationServiceExceptionHandler]:{}", ex.getMessage());
+        return ApiResult.failed(ErrorCode.USERNAME_NOT_EXIST,ex.getMessage());
     }
 
     /**
@@ -90,7 +102,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = BadCredentialsException.class)
     public ApiResult<?> badCredentialsExceptionHandler(BadCredentialsException ex) {
         log.info("[badCredentialsExceptionHandler]:{}", ex.getMessage());
-        return ApiResult.failed(ErrorCode.USERNAME_AND_PASSWORD_IS_ERROR);
+        return ApiResult.failed(ErrorCode.USERNAME_AND_PASSWORD_IS_ERROR,ex.getMessage());
     }
 
     /**
@@ -101,7 +113,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = AccessDeniedException.class)
     public ApiResult<?> accessDeniedExceptionHandler(AccessDeniedException ex) {
         log.info("[accessDeniedExceptionHandler]:{}", ex.getMessage());
-        return ApiResult.failed(ErrorCode.FORBIDDEN);
+        return ApiResult.failed(ErrorCode.FORBIDDEN,ex.getMessage());
     }
 
     /**
@@ -120,6 +132,6 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public ApiResult<?> defaultExceptionHandler(Exception ex) {
         log.error("[defaultExceptionHandler]", ex);
-        return ApiResult.failed(ErrorCode.INTERNAL_SERVER_ERROR);
+        return ApiResult.failed(ErrorCode.UNKNOWN,ex.getMessage());
     }
 }
