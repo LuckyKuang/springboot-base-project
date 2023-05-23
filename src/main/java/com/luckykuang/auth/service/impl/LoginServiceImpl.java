@@ -22,51 +22,46 @@ import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.properties.EasyCaptchaProperties;
 import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.request.RefreshReq;
 import com.luckykuang.auth.response.CaptchaRsp;
 import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.security.properties.TokenSecretProperties;
 import com.luckykuang.auth.security.utils.JwtTokenProvider;
 import com.luckykuang.auth.service.LoginService;
-import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.utils.CommonUtils;
 import com.luckykuang.auth.utils.RedisUtils;
+import com.luckykuang.auth.utils.RequestUtils;
 import com.wf.captcha.*;
 import com.wf.captcha.base.Captcha;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.awt.*;
-
-import static com.luckykuang.auth.constants.CoreConstants.BEARER_HEAD;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 /**
  * @author fankuangyong
  * @date 2023/5/18 17:13
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
-    private final RedisUtils redisUtils;
-    private final UserService userService;
     private final TokenSecretProperties tokenSecretProperties;
     private final EasyCaptchaProperties easyCaptchaProperties;
+    private final RedisUtils redisUtils;
 
     @Override
     public ApiResult<TokenRsp> login(LoginReq loginReq) {
         LoginReq from = LoginReq.from(loginReq);
-//        User user = userService.getUserByUsername(from.username())
-//                .orElseThrow(() -> new BusinessException(ErrorCode.USERNAME_NOT_EXIST));
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 from.username(),
                 from.password()
@@ -84,40 +79,36 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ApiResult<TokenRsp> refresh(RefreshReq refreshReq) {
-        String bearerToken = refreshReq.refreshToken();
-        String accessToken;
-        String refreshToken;
-        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
-            return ApiResult.success(TokenRsp.from(null, null));
+    public ApiResult<TokenRsp> refresh(HttpServletRequest request) {
+        String token = RequestUtils.resolveToken(request);
+        if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null){
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            String accessToken = jwtTokenProvider.generateAccessToken(authentication);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+            // 加入redis缓存
+            redisUtils.set(
+                    RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
+                    refreshToken,
+                    tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
+            );
+            return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
         }
-        String token = bearerToken.substring(BEARER_HEAD.length());
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-        accessToken = jwtTokenProvider.generateAccessToken(authentication);
-        refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
-        // 加入redis缓存
-        redisUtils.set(
-                RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
-                refreshToken,
-                tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
-        );
-        return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
+        return ApiResult.success(TokenRsp.from("",""));
     }
 
     @Override
     public ApiResult<Void> logout(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION);
-        if (!StringUtils.hasText(bearerToken) || !bearerToken.startsWith(BEARER_HEAD)){
-            return ApiResult.failed(ErrorCode.BAD_REQUEST);
+        String token = RequestUtils.resolveToken(request);
+        log.info("logout token:{}",token);
+        if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null){
+            Long userId = jwtTokenProvider.getUserId(token);
+            // 删除token redis缓存
+            redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+            // 删除菜单权限
+            redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + userId);
+            // 清除security缓存
+            SecurityContextHolder.clearContext();
         }
-        String token = bearerToken.substring(BEARER_HEAD.length());
-        Long userId = jwtTokenProvider.getUserId(token);
-        // 删除token redis缓存
-        redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
-        // 删除菜单权限
-        redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + userId);
-        // 清除security缓存
-        SecurityContextHolder.clearContext();
         return ApiResult.success();
     }
 

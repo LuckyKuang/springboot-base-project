@@ -46,6 +46,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.luckykuang.auth.constants.CoreConstants.DEFAULT_PASSWORD;
+
 /**
  * @author luckykuang
  * @date 2023/4/20 14:19
@@ -146,7 +148,7 @@ public class UserServiceImpl implements UserService {
         user.setName(userReq.name());
         user.setUsername(userReq.username());
         // 加密
-        user.setPassword(passwordEncoder.encode(userReq.password()));
+        user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
         user.setGender(userReq.gender());
         user.setEmail(userReq.email());
         user.setPhone(userReq.phone());

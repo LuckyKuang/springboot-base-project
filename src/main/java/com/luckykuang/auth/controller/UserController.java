@@ -82,4 +82,20 @@ public class UserController {
         userService.delUser(id);
         return ApiResult.success(id);
     }
+
+    // 修改密码
+    @Operation(summary = "修改密码",security = @SecurityRequirement(name = "Authorization"))
+    @PostMapping("updatePass")
+    public ApiResult<Long> updatePass(){
+//        userService.updatePass();
+        return ApiResult.success();
+    }
+
+    // 重置密码
+    @Operation(summary = "重置密码",security = @SecurityRequirement(name = "Authorization"))
+    @PostMapping("resetPass")
+    public ApiResult<Long> resetPass(){
+//        userService.resetPass();
+        return ApiResult.success();
+    }
 }

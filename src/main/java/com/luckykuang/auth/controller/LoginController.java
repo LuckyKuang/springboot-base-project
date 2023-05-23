@@ -18,11 +18,11 @@ package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.request.RefreshReq;
 import com.luckykuang.auth.response.CaptchaRsp;
 import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -52,16 +52,16 @@ public class LoginController {
         return loginService.login(loginReq);
     }
 
-    @Operation(summary = "退出登录")
+    @Operation(summary = "退出登录",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("logout")
     public ApiResult<Void> logout(HttpServletRequest request){
         return loginService.logout(request);
     }
 
-    @Operation(summary = "刷新令牌")
+    @Operation(summary = "刷新令牌",security = @SecurityRequirement(name = "Authorization"))
     @PostMapping("refresh")
-    public ApiResult<TokenRsp> refresh(@RequestBody @Validated RefreshReq refreshReq) {
-        return loginService.refresh(refreshReq);
+    public ApiResult<TokenRsp> refresh(HttpServletRequest request) {
+        return loginService.refresh(request);
     }
 
     @Operation(summary = "获取验证码")

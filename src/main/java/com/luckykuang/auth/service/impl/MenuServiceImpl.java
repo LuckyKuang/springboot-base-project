@@ -23,6 +23,7 @@ import com.luckykuang.auth.service.MenuService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
  * @author luckykuang
  * @date 2023/4/20 14:18
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {

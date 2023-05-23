@@ -18,7 +18,6 @@ package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.request.RefreshReq;
 import com.luckykuang.auth.response.CaptchaRsp;
 import com.luckykuang.auth.response.TokenRsp;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ public interface LoginService {
 
     ApiResult<TokenRsp> login(LoginReq loginReq);
 
-    ApiResult<TokenRsp> refresh(RefreshReq refreshReq);
+    ApiResult<TokenRsp> refresh(HttpServletRequest request);
 
     ApiResult<Void> logout(HttpServletRequest request);
     CaptchaRsp getCaptcha();

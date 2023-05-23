@@ -54,4 +54,6 @@ public interface CoreConstants {
 
     String CAPTCHA_ANSWER = "captchaAnswer";
     String CAPTCHA_KEY = "captchaKey";
+
+    String DEFAULT_PASSWORD = "123456";
 }

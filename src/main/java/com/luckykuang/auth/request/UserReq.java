@@ -16,7 +16,6 @@
 
 package com.luckykuang.auth.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -44,10 +43,10 @@ public record UserReq(
         @NotNull
         @Schema(description = "性别 1-男 0-女",allowableValues = {"1","0"})
         Integer gender,
-        @NotBlank
-        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-        @Schema(description = "密码")
-        String password,
+//        @NotBlank
+//        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//        @Schema(description = "密码")
+//        String password,
         @Schema(description = "用户头像")
         String avatar,
         @NotNull
@@ -63,7 +62,7 @@ public record UserReq(
                 userReq.phone,
                 userReq.email,
                 userReq.gender,
-                userReq.password,
+//                userReq.password,
                 userReq.avatar,
                 userReq.status,
                 userReq.deptId);

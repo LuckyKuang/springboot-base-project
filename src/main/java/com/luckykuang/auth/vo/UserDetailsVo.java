@@ -16,6 +16,7 @@
 
 package com.luckykuang.auth.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.model.Role;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class UserDetailsVo {
      */
     private Long userId;
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     /**
      * 部门id
