@@ -19,7 +19,6 @@ package com.luckykuang.auth.security.filter;
 import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.security.utils.JwtTokenProvider;
-import com.luckykuang.auth.utils.ApplicationContextUtils;
 import com.luckykuang.auth.utils.RedisUtils;
 import com.luckykuang.auth.utils.RequestUtils;
 import com.luckykuang.auth.utils.ResponseUtils;
@@ -29,13 +28,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.luckykuang.auth.constants.CoreConstants.CAPTCHA_ANSWER;
 import static com.luckykuang.auth.constants.CoreConstants.CAPTCHA_KEY;
@@ -50,13 +49,13 @@ import static com.luckykuang.auth.constants.CoreConstants.CAPTCHA_KEY;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisUtils redisUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String servletPath = request.getServletPath();
-        RedisUtils redisUtils = ApplicationContextUtils.getBean(RedisUtils.class);
         // 登录接口校验
         if (servletPath.equals("/auth/v1/sign/login")) {
             // 用户输入的验证码
@@ -78,14 +77,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         // 其他接口校验
         else {
-            String token = RequestUtils.resolveToken(request);
-            if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            Optional<String> token = RequestUtils.resolveToken(request);
+            if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
                 // 读取redis缓存
-                Object tokenCache = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+                Object tokenCache = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token.get());
                 if (tokenCache == null) {
                     ResponseUtils.writeErrMsg(response, ErrorCode.TOKEN_INVALID);
                 }
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);

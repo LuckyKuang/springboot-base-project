@@ -18,15 +18,16 @@ package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
+import com.luckykuang.auth.request.PasswordRed;
 import com.luckykuang.auth.request.UserReq;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.UserDetailsVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth/v1/user")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final UserService userService;
 
@@ -78,24 +79,25 @@ public class UserController {
 
     @Operation(summary = "删除用户",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("{userId}")
-    public ApiResult<Long> deleteUser(@PathVariable("userId") Long id){
-        userService.delUser(id);
-        return ApiResult.success(id);
+    public ApiResult<Void> deleteUser(@PathVariable("userId") Long id){
+        return userService.delUser(id);
     }
 
-    // 修改密码
     @Operation(summary = "修改密码",security = @SecurityRequirement(name = "Authorization"))
     @PostMapping("updatePass")
-    public ApiResult<Long> updatePass(){
-//        userService.updatePass();
-        return ApiResult.success();
+    public ApiResult<Void> updatePass(PasswordRed passwordRed){
+        return userService.updatePass(passwordRed);
     }
 
-    // 重置密码
     @Operation(summary = "重置密码",security = @SecurityRequirement(name = "Authorization"))
     @PostMapping("resetPass")
-    public ApiResult<Long> resetPass(){
-//        userService.resetPass();
-        return ApiResult.success();
+    public ApiResult<Void> resetPass(){
+        return userService.resetPass();
+    }
+
+    @Operation(summary = "查询用户信息",security = @SecurityRequirement(name = "Authorization"))
+    @GetMapping("getUserInfo")
+    public ApiResult<UserDetailsVo> getUserInfo(){
+        return ApiResult.success(userService.getUserInfo());
     }
 }

@@ -16,7 +16,9 @@
 
 package com.luckykuang.auth.service;
 
+import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.User;
+import com.luckykuang.auth.request.PasswordRed;
 import com.luckykuang.auth.request.UserReq;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
@@ -42,7 +44,13 @@ public interface UserService {
 
     User updateUser(Long id, UserReq userReq);
 
-    void delUser(Long id);
+    ApiResult<Void> delUser(Long id);
 
     UserDetailsVo getUserDetails(String username);
+
+    ApiResult<Void> updatePass(PasswordRed passwordRed);
+
+    ApiResult<Void> resetPass();
+
+    UserDetailsVo getUserInfo();
 }

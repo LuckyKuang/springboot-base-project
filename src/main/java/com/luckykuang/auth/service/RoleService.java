@@ -16,6 +16,7 @@
 
 package com.luckykuang.auth.service;
 
+import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.Role;
 import com.luckykuang.auth.request.RoleReq;
 import com.luckykuang.auth.vo.PageResultVo;
@@ -38,5 +39,5 @@ public interface RoleService {
 
     Role updateRole(Long id, RoleReq roleReq);
 
-    void delRole(Long id);
+    ApiResult<Void> delRole(Long id);
 }

@@ -29,6 +29,7 @@ import com.luckykuang.auth.utils.DateUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,10 +49,11 @@ public class JacksonConfig {
         ObjectMapper objectMapper = new ObjectMapper();
 
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        // Long类型转String类型，解决精度丢失问题
+        // Long/BigInteger/BigDecimal类型转String类型，解决精度丢失问题，特别是前端js精度丢失问题
         javaTimeModule.addSerializer(Long.class, ToStringSerializer.instance);
         javaTimeModule.addSerializer(Long.TYPE,ToStringSerializer.instance);
         javaTimeModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
+        javaTimeModule.addSerializer(BigDecimal.class, ToStringSerializer.instance);
 
         // String转LocalDateTime
         // 序列化
@@ -71,6 +73,9 @@ public class JacksonConfig {
                 new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DateUtils.HH_MM_SS)));
 
         objectMapper.registerModule(javaTimeModule);
+        // 禁用 FAIL_ON_EMPTY_BEANS，允许json转换中的null值
+        // 解决报错： Could not write JSON: No serializer found for class java.lang.Object
+//        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         return objectMapper;
     }
 }

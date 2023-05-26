@@ -22,6 +22,8 @@ import com.luckykuang.auth.response.CaptchaRsp;
 import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.service.LoginService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +48,10 @@ public class LoginController {
      * @param loginReq 只传入username和password
      * @return
      */
-    @Operation(summary = "登录")
+    @Operation(summary = "登录",parameters = {
+            @Parameter(in = ParameterIn.HEADER,name = "captchaKey",description = "缓存中的验证码key",required = true),
+            @Parameter(in = ParameterIn.HEADER,name = "captchaAnswer",description = "用户输入的内容",required = true),
+    })
     @PostMapping("login")
     public ApiResult<TokenRsp> login(@RequestBody @Validated LoginReq loginReq){
         return loginService.login(loginReq);

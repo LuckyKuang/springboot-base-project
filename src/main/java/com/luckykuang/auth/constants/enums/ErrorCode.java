@@ -56,11 +56,14 @@ public enum ErrorCode {
     BASE64_TO_IMAGE_ERROR(1012,"Base64转图片异常"),
     USER_NOT_EXIST(1013,"用户不存在"),
     ROLE_NOT_EXIST(1014,"角色不存在"),
-    PERMISSION_NOT_EXIST(1015,"权限不存在"),
+    MENU_PERMISSION_NOT_EXIST(1015,"菜单权限不存在"),
     DEPT_NOT_EXIST(1016,"部门不存在"),
     CAPTCHA_TIMEOUT(1017, "验证码已过期"),
     CAPTCHA_ERROR(1018, "验证码错误"),
     CAPTCHA_CONFIG_ERROR(1019, "验证码配置信息有无,请联系管理员!"),
+    DATA_SCOPE_NOT_EXIST(1020,"数据权限不存在"),
+    CURRENT_PASSWORD_ERROR(1021,"当前密码错误"),
+    NEW_AND_CONFIRM_PASSWORD_DIFFER(1022,"新密码和确认密码不一致"),
     ;
     private final Integer code;
     private final String message;

@@ -43,10 +43,6 @@ public record UserReq(
         @NotNull
         @Schema(description = "性别 1-男 0-女",allowableValues = {"1","0"})
         Integer gender,
-//        @NotBlank
-//        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//        @Schema(description = "密码")
-//        String password,
         @Schema(description = "用户头像")
         String avatar,
         @NotNull
@@ -62,7 +58,6 @@ public record UserReq(
                 userReq.phone,
                 userReq.email,
                 userReq.gender,
-//                userReq.password,
                 userReq.avatar,
                 userReq.status,
                 userReq.deptId);

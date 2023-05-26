@@ -19,7 +19,7 @@ package com.luckykuang.auth.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/17 11:19
  */
 public record CaptchaRsp(@Schema(description = "验证码key") String captchaKey,

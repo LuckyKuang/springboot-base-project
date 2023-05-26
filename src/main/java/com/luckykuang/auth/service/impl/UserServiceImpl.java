@@ -16,6 +16,7 @@
 
 package com.luckykuang.auth.service.impl;
 
+import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Dept;
@@ -25,10 +26,13 @@ import com.luckykuang.auth.model.User;
 import com.luckykuang.auth.repository.DeptRepository;
 import com.luckykuang.auth.repository.RoleRepository;
 import com.luckykuang.auth.repository.UserRepository;
+import com.luckykuang.auth.request.PasswordRed;
 import com.luckykuang.auth.request.UserReq;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.utils.AssertUtils;
+import com.luckykuang.auth.utils.BCryptUtils;
 import com.luckykuang.auth.utils.PageUtils;
+import com.luckykuang.auth.utils.RequestUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import com.luckykuang.auth.vo.UserDetailsVo;
@@ -36,14 +40,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.luckykuang.auth.constants.CoreConstants.DEFAULT_PASSWORD;
@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final DeptRepository deptRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -104,10 +103,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delUser(Long id) {
+    public ApiResult<Void> delUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ID_NOT_EXIST));
         userRepository.delete(user);
+        return ApiResult.success();
     }
 
     @Override
@@ -129,11 +129,48 @@ public class UserServiceImpl implements UserService {
         userDetailsVo.setUserId(user.getId());
         userDetailsVo.setUsername(user.getUsername());
         userDetailsVo.setPassword(user.getPassword());
-        userDetailsVo.setDeptId(user.getDept().getId());
+        userDetailsVo.setDeptId(user.getDept() == null ? null : user.getDept().getId());
         userDetailsVo.setDataScope(maxDataScope);
         userDetailsVo.setRoles(roles);
         userDetailsVo.setMenus(menus);
         return userDetailsVo;
+    }
+
+    @Override
+    public ApiResult<Void> updatePass(PasswordRed passwordRed) {
+        String currentPassword = RequestUtils.getPassword();
+        boolean match = BCryptUtils.match(passwordRed.oldPassword(), currentPassword);
+        if (!match){
+            throw new BusinessException(ErrorCode.CURRENT_PASSWORD_ERROR);
+        }
+        if (!Objects.equals(passwordRed.newPassword(),passwordRed.confirmNewPassword())){
+            throw new BusinessException(ErrorCode.NEW_AND_CONFIRM_PASSWORD_DIFFER);
+        }
+        Optional<User> userOptional = userRepository.findById(RequestUtils.getUserId());
+        if (userOptional.isEmpty()){
+            throw new BusinessException(ErrorCode.USER_NOT_EXIST);
+        }
+        User user = userOptional.get();
+        user.setPassword(BCryptUtils.encode(passwordRed.newPassword()));
+        userRepository.save(user);
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<Void> resetPass() {
+        Optional<User> userOptional = userRepository.findById(RequestUtils.getUserId());
+        if (userOptional.isEmpty()){
+            throw new BusinessException(ErrorCode.USER_NOT_EXIST);
+        }
+        User user = userOptional.get();
+        user.setPassword(BCryptUtils.encode(DEFAULT_PASSWORD));
+        userRepository.save(user);
+        return ApiResult.success();
+    }
+
+    @Override
+    public UserDetailsVo getUserInfo() {
+        return getUserDetails(RequestUtils.getUsername());
     }
 
     private User saveUser(Long id, UserReq userReq) {
@@ -147,8 +184,10 @@ public class UserServiceImpl implements UserService {
         user.setId(id);
         user.setName(userReq.name());
         user.setUsername(userReq.username());
-        // 加密
-        user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+        if (id == null) {
+            // 加密
+            user.setPassword(BCryptUtils.encode(DEFAULT_PASSWORD));
+        }
         user.setGender(userReq.gender());
         user.setEmail(userReq.email());
         user.setPhone(userReq.phone());

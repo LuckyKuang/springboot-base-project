@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import java.awt.*;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/17 10:50
  */
 @Getter

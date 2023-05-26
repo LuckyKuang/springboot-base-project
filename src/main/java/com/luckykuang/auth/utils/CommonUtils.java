@@ -16,10 +16,12 @@
 
 package com.luckykuang.auth.utils;
 
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/17 15:46
  */
 public class CommonUtils {
@@ -36,5 +38,22 @@ public class CommonUtils {
             return UUID.randomUUID().toString().replace("-","");
         }
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * List转String 带引号
+     * @param delimiter 用于分割的字符
+     * @param elements 需要拆分的数组
+     * @return 分割后的字符
+     */
+    public static String join(CharSequence delimiter,
+                              Iterable<? extends CharSequence> elements) {
+        Objects.requireNonNull(delimiter);
+        Objects.requireNonNull(elements);
+        StringJoiner joiner = new StringJoiner(delimiter);
+        for (CharSequence cs: elements) {
+            joiner.add("\"" + cs + "\"");
+        }
+        return joiner.toString();
     }
 }

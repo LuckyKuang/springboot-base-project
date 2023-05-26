@@ -23,7 +23,7 @@ import com.luckykuang.auth.response.TokenRsp;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/18 17:13
  */
 public interface LoginService {

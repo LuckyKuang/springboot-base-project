@@ -16,7 +16,7 @@
 
 /**
  * 放置 Spring Security 的所有配置
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/18 16:39
  */
 package com.luckykuang.auth.security;

@@ -78,8 +78,7 @@ public class RoleController {
 
     @Operation(summary = "删除角色",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("{roleId}")
-    public ApiResult<Long> delRole(@PathVariable("roleId") Long id){
-        roleService.delRole(id);
-        return ApiResult.success(id);
+    public ApiResult<Void> delRole(@PathVariable("roleId") Long id){
+        return roleService.delRole(id);
     }
 }

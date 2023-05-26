@@ -6,10 +6,19 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/base-project?characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://localhost:3306/base-project?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      connection-timeout: 10000
+      validation-timeout: 3000
+      idle-timeout: 60000
+      login-timeout: 5
+      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      read-only: false
   data:
     redis:
       # Redis数据库索引（默认为0）

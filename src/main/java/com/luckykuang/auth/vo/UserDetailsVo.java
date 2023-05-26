@@ -19,13 +19,14 @@ package com.luckykuang.auth.vo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.model.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Set;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/22 14:34
  */
 @Getter
@@ -34,24 +35,24 @@ public class UserDetailsVo {
     /**
      * 用户id
      */
+    @Schema(description = "用户id")
     private Long userId;
+
+    @Schema(description = "用户名")
     private String username;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    /**
-     * 部门id
-     */
+
+    @Schema(description = "部门id")
     private Long deptId;
-    /**
-     * 数据权限 0-全部数据 1-本部门及子部门数据 2-本部门数据 3-本人数据
-     */
+
+    @Schema(description = "数据权限 0-全部数据 1-本部门及子部门数据 2-本部门数据 3-本人数据")
     private Integer dataScope;
-    /**
-     * 角色
-     */
+
+    @Schema(description = "角色")
     private Set<Role> roles;
-    /**
-     * 菜单权限
-     */
+
+    @Schema(description = "菜单权限")
     private Set<Menu> menus;
 }

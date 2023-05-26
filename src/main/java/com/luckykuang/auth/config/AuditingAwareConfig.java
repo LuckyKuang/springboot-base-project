@@ -16,7 +16,7 @@
 
 package com.luckykuang.auth.config;
 
-import com.luckykuang.auth.base.RequestContext;
+import com.luckykuang.auth.utils.RequestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -34,6 +34,6 @@ public class AuditingAwareConfig implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        return RequestContext.getUserId();
+        return Optional.of(RequestUtils.getUserId());
     }
 }

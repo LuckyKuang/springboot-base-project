@@ -16,6 +16,7 @@
 
 package com.luckykuang.auth.service;
 
+import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.request.MenuReq;
 import com.luckykuang.auth.vo.PageResultVo;
@@ -28,15 +29,16 @@ import java.util.List;
  * @date 2023/4/20 14:18
  */
 public interface MenuService {
-    Menu addMenu(MenuReq menuReq);
-
-    Menu getMenuById(Long id);
-
-    List<Menu> getMenus();
 
     PageResultVo<Menu> getMenusByPage(PageVo page);
 
+    List<Menu> getMenus();
+
+    Menu getMenuById(Long id);
+
+    Menu addMenu(MenuReq menuReq);
+
     Menu updateMenu(Long id, MenuReq menuReq);
 
-    void delMenu(Long id);
+    ApiResult<Void> delMenu(Long id);
 }

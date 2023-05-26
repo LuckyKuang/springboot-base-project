@@ -20,10 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.luckykuang.auth.base.BaseParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
@@ -37,6 +34,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -51,34 +49,28 @@ public class User extends BaseParam {
 
     @Serial
     private static final long serialVersionUID = -3932246348124717588L;
-//    @NotBlank
+
     @Column(nullable = false, length = 128)
     @Schema(description = "用户名称")
     private String name;
 
-//    @NotBlank
     @Column(nullable = false, length = 128)
     @Schema(description = "用户名")
     private String username;
 
-//    @NotNull
     @Column(nullable = false, length = 1)
     @Schema(description = "性别 1-男 0-女",allowableValues = {"1","0"})
     private Integer gender;
 
-//    @NotBlank
     @Column(nullable = false, length = 128)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(description = "密码")
     private String password;
 
-//    @Email
     @Column(length = 128)
     @Schema(description = "邮箱")
     private String email;
 
-//    @NotBlank
-//    @Mobile
     @Column(nullable = false, length = 32)
     @Schema(description = "手机号码")
     private String phone;
@@ -87,7 +79,6 @@ public class User extends BaseParam {
     @Schema(description = "用户头像")
     private String avatar;
 
-//    @NotNull
     @Column(nullable = false, length = 1)
     @Schema(description = "用户状态 1-启用 0-禁用",allowableValues = {"1", "0"})
     private Integer status;

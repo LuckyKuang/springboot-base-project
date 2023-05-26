@@ -79,8 +79,7 @@ public class MenuController {
 
     @Operation(summary = "删除菜单权限",security = @SecurityRequirement(name = "Authorization"))
     @DeleteMapping("{menuId}")
-    public ApiResult<Long> delMenu(@PathVariable("menuId") Long id){
-        menuService.delMenu(id);
-        return ApiResult.success(id);
+    public ApiResult<Void> delMenu(@PathVariable("menuId") Long id){
+        return menuService.delMenu(id);
     }
 }

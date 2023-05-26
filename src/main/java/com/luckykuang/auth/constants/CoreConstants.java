@@ -23,7 +23,6 @@ package com.luckykuang.auth.constants;
  */
 public interface CoreConstants {
 
-
     int NO = 0;
     int YES = 1;
 

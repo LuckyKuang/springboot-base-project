@@ -25,21 +25,19 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serial;
 
 /**
  * 菜单权限表
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/16 17:20
  */
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -58,7 +56,7 @@ public class Menu extends BaseParam {
 
     @NotNull
     @Column(nullable = false, length = 1)
-    @Schema(description = "菜单类型 1-菜单目录 2-菜单导航 3-外链 4-按钮",allowableValues = {"1","2","3","4"})
+    @Schema(description = "菜单类型 1-目录 2-菜单 3-按钮 4-外链",allowableValues = {"1","2","3","4"})
     private Integer type;
 
     @Column(length = 128)

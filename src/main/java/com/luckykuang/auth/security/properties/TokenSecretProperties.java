@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * jwt配置
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/17 14:09
  */
 @Getter

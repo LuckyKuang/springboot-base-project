@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * 无权限访问异常处理
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/15 17:19
  */
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {

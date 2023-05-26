@@ -33,4 +33,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByIdIsNotAndUsername(Long id, String username);
 
     Optional<User> findByPhone(String phone);
+
+    Optional<User> findByPassword(String password);
 }

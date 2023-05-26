@@ -23,10 +23,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.util.HashSet;
@@ -40,6 +37,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -81,11 +79,4 @@ public class Role extends BaseParam {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Menu> menus = new HashSet<>();
-
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//    public List<SimpleGrantedAuthority> getAuthorities() {
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(ROLE_UNDERLINE + this.code));
-//        return authorities;
-//    }
 }

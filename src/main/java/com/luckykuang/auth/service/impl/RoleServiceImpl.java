@@ -16,6 +16,7 @@
 
 package com.luckykuang.auth.service.impl;
 
+import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Role;
@@ -80,7 +81,6 @@ public class RoleServiceImpl implements RoleService {
         AssertUtils.isTrue(repositoryById.isPresent(), ErrorCode.ID_NOT_EXIST);
         Optional<Role> roleOptional = roleRepository.findByIdIsNotAndCodeOrName(id, from.code(), from.name());
         AssertUtils.isTrue(roleOptional.isEmpty(), ErrorCode.NAME_EXIST);
-
         return saveRole(id, from);
     }
 
@@ -96,9 +96,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void delRole(Long id) {
+    public ApiResult<Void> delRole(Long id) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ID_NOT_EXIST));
         roleRepository.delete(role);
+        return ApiResult.success();
     }
 }

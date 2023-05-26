@@ -35,7 +35,6 @@ import com.wf.captcha.base.Captcha;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,9 +42,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.util.Optional;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/18 17:13
  */
 @Slf4j
@@ -80,9 +80,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ApiResult<TokenRsp> refresh(HttpServletRequest request) {
-        String token = RequestUtils.resolveToken(request);
-        if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null){
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        Optional<String> token = RequestUtils.resolveToken(request);
+        if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null){
+            Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
             String accessToken = jwtTokenProvider.generateAccessToken(authentication);
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
             // 加入redis缓存
@@ -98,12 +98,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ApiResult<Void> logout(HttpServletRequest request) {
-        String token = RequestUtils.resolveToken(request);
+        Optional<String> token = RequestUtils.resolveToken(request);
         log.info("logout token:{}",token);
-        if (StringUtils.isNotBlank(token) && SecurityContextHolder.getContext().getAuthentication() == null){
-            Long userId = jwtTokenProvider.getUserId(token);
+        if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null){
+            Long userId = jwtTokenProvider.getUserId(token.get());
             // 删除token redis缓存
-            redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
+            redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token.get());
             // 删除菜单权限
             redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + userId);
             // 清除security缓存

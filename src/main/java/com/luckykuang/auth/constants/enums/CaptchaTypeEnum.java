@@ -17,7 +17,7 @@
 package com.luckykuang.auth.constants.enums;
 
 /**
- * @author fankuangyong
+ * @author luckykuang
  * @date 2023/5/17 10:52
  */
 public enum CaptchaTypeEnum {

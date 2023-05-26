@@ -16,14 +16,20 @@
 
 package com.luckykuang.auth.service.impl;
 
+import com.luckykuang.auth.base.ApiResult;
+import com.luckykuang.auth.constants.enums.ErrorCode;
+import com.luckykuang.auth.exception.BusinessException;
 import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.repository.MenuRepository;
 import com.luckykuang.auth.request.MenuReq;
 import com.luckykuang.auth.service.MenuService;
+import com.luckykuang.auth.utils.PageUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,25 +43,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
 
-    private MenuRepository menuRepository;
+    private final MenuRepository menuRepository;
+
 
     @Override
-    public Menu addMenu(MenuReq menuReq) {
-        return null;
-    }
-
-    @Override
-    public Menu getMenuById(Long id) {
-        return null;
+    public PageResultVo<Menu> getMenusByPage(PageVo page) {
+        Pageable pageable = PageUtils.getPageable(page, Sort.Direction.DESC, "updateTime");
+        return PageUtils.getPageResult(menuRepository.findAll(pageable));
     }
 
     @Override
     public List<Menu> getMenus() {
-        return null;
+        return menuRepository.findAll();
     }
 
     @Override
-    public PageResultVo<Menu> getMenusByPage(PageVo page) {
+    public Menu getMenuById(Long id) {
+        return menuRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Menu addMenu(MenuReq menuReq) {
         return null;
     }
 
@@ -65,7 +73,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void delMenu(Long id) {
-        // TODO document why this method is empty
+    public ApiResult<Void> delMenu(Long id) {
+        Menu menu = menuRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ID_NOT_EXIST));
+        menuRepository.delete(menu);
+        return ApiResult.success();
     }
 }
