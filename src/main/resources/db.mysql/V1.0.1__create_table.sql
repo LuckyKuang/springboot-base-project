@@ -15,67 +15,105 @@
  */
 
 -- ----------------------------
--- Table structure for ky_permission
+-- Table structure for ky_dept
 -- ----------------------------
-DROP TABLE IF EXISTS `ky_permission`;
-CREATE TABLE `ky_permission` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `create_by` bigint NOT NULL,
-  `create_time` datetime(3) NOT NULL,
-  `update_by` bigint NOT NULL,
-  `update_time` datetime(3) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `permission_name` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+DROP TABLE IF EXISTS `ky_dept`;
+CREATE TABLE `ky_dept`  (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `create_by` int NOT NULL,
+    `create_time` datetime(3) NULL,
+    `update_by` int NOT NULL,
+    `update_time` datetime(3) NULL,
+    `name` varchar(128) NOT NULL,
+    `parent_id` bigint NULL DEFAULT NULL,
+    `sort` int NOT NULL,
+    `status` tinyint(1) NOT NULL,
+    `tree_path` varchar(8) DEFAULT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for ky_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `ky_menu`;
+CREATE TABLE `ky_menu`  (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `create_by` int NOT NULL,
+    `create_time` datetime(3) NULL,
+    `update_by` int NOT NULL,
+    `update_time` datetime(3) NULL,
+    `component_path` varchar(128) DEFAULT NULL,
+    `icon` varchar(128) DEFAULT NULL,
+    `name` varchar(128) NOT NULL,
+    `outer_link_url` varchar(255) DEFAULT NULL,
+    `parent_id` bigint NULL DEFAULT NULL,
+    `permission_name` varchar(128) DEFAULT NULL,
+    `redirect_url` varchar(255) DEFAULT NULL,
+    `router_path` varchar(128) DEFAULT NULL,
+    `sort` int NOT NULL,
+    `status` tinyint(1) NOT NULL,
+    `type` tinyint(1) NOT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for ky_role
 -- ----------------------------
 DROP TABLE IF EXISTS `ky_role`;
-CREATE TABLE `ky_role` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `create_by` bigint NOT NULL,
-  `create_time` datetime(3) NOT NULL,
-  `update_by` bigint NOT NULL,
-  `update_time` datetime(3) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `role_name` varchar(128) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `ky_role`  (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `create_by` int NOT NULL,
+    `create_time` datetime(3) NULL,
+    `update_by` int NOT NULL,
+    `update_time` datetime(3) NULL,
+    `code` varchar(128) NOT NULL,
+    `description` varchar(255) DEFAULT NULL,
+    `name` varchar(128) NOT NULL,
+    `sort` int NOT NULL,
+    `status` tinyint(1) NOT NULL,
+    `data_scope` tinyint(1) NOT NULL,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- ----------------------------
--- Table structure for ky_role_permissions
+-- Table structure for ky_role_menus
 -- ----------------------------
-DROP TABLE IF EXISTS `ky_role_permissions`;
-CREATE TABLE `ky_role_permissions` (
-  `role_id` bigint NOT NULL,
-  `permissions_id` bigint NOT NULL,
-  PRIMARY KEY (`role_id`,`permissions_id`),
-  KEY `fk_ky_role_permissions_id` (`permissions_id`),
-  CONSTRAINT `fk_ky_role_permissions_role_id` FOREIGN KEY (`role_id`) REFERENCES `ky_role` (`id`),
-  CONSTRAINT `fk_ky_role_permissions_id` FOREIGN KEY (`permissions_id`) REFERENCES `ky_permission` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+DROP TABLE IF EXISTS `ky_role_menus`;
+CREATE TABLE `ky_role_menus`  (
+    `role_id` bigint NOT NULL,
+    `menus_id` bigint NOT NULL,
+    PRIMARY KEY (`role_id`, `menus_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Table structure for ky_user
 -- ----------------------------
 DROP TABLE IF EXISTS `ky_user`;
-CREATE TABLE `ky_user` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `create_by` bigint NOT NULL,
-  `create_time` datetime(3) NOT NULL,
-  `update_by` bigint NOT NULL,
-  `update_time` datetime(3) NOT NULL,
-  `email` varchar(128) DEFAULT NULL,
-  `name` varchar(128) NOT NULL,
-  `password` varchar(128) NOT NULL,
-  `phone` varchar(32) NOT NULL,
-  `user_status` varchar(32) NOT NULL,
-  `username` varchar(128) NOT NULL,
-  `role_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ky_user_phone_uk` (`phone`),
-  KEY `fk_ky_user_role_id` (`role_id`),
-  CONSTRAINT `fk_ky_user_role_id` FOREIGN KEY (`role_id`) REFERENCES `ky_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `ky_user`  (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `create_by` int NOT NULL,
+    `create_time` datetime(3) NULL,
+    `update_by` int NOT NULL,
+    `update_time` datetime(3) NULL,
+    `avatar` varchar(128) DEFAULT NULL,
+    `email` varchar(128) DEFAULT NULL,
+    `gender` tinyint(1) NOT NULL,
+    `name` varchar(128) NOT NULL,
+    `password` varchar(128) NOT NULL,
+    `phone` varchar(32) NOT NULL,
+    `status` tinyint(1) NOT NULL,
+    `username` varchar(128) NOT NULL,
+    `dept_id` bigint NULL DEFAULT NULL,
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `ky_user_phone_uk`(`phone`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Table structure for ky_user_roles
+-- ----------------------------
+DROP TABLE IF EXISTS `ky_user_roles`;
+CREATE TABLE `ky_user_roles`  (
+    `user_id` bigint NOT NULL,
+    `roles_id` bigint NOT NULL,
+    PRIMARY KEY (`user_id`, `roles_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;

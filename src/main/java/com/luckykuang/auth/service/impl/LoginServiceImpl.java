@@ -81,7 +81,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public ApiResult<TokenRsp> refresh(HttpServletRequest request) {
         Optional<String> token = RequestUtils.resolveToken(request);
-        if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null){
+        if (token.isPresent() && RequestUtils.isLogin()){
             Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
             String accessToken = jwtTokenProvider.generateAccessToken(authentication);
             String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
@@ -100,12 +100,9 @@ public class LoginServiceImpl implements LoginService {
     public ApiResult<Void> logout(HttpServletRequest request) {
         Optional<String> token = RequestUtils.resolveToken(request);
         log.info("logout token:{}",token);
-        if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null){
-            Long userId = jwtTokenProvider.getUserId(token.get());
+        if (token.isPresent() && RequestUtils.isLogin()){
             // 删除token redis缓存
             redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token.get());
-            // 删除菜单权限
-            redisUtils.del(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + userId);
             // 清除security缓存
             SecurityContextHolder.clearContext();
         }

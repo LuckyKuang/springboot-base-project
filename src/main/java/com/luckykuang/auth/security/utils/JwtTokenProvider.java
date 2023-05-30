@@ -20,10 +20,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.security.properties.TokenSecretProperties;
 import com.luckykuang.auth.security.userdetails.LoginUserDetails;
 import com.luckykuang.auth.utils.CommonUtils;
@@ -39,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * jwt有以下7个官方字段供选择:
@@ -158,12 +155,6 @@ public class JwtTokenProvider {
      */
     public Authentication getAuthentication(String token){
 
-        Object accessCacheToken = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token);
-        // token 过期
-        if (accessCacheToken == null){
-            throw new BusinessException(ErrorCode.TOKEN_INVALID);
-        }
-
         Boolean tokenExpired = isTokenExpired(token);
         // token 过期
         if (Boolean.TRUE.equals(tokenExpired)){
@@ -192,11 +183,7 @@ public class JwtTokenProvider {
         String sign;
         try {
             LoginUserDetails principal = (LoginUserDetails) authentication.getPrincipal();
-            List<String> roles = principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-
-            // 菜单权限放入缓存
-            Set<Menu> menus = principal.getMenus();
-            redisUtils.set(RedisConstants.REDIS_HEAD + RedisConstants.USER_MENU_KEY + principal.getUserId(),menus);
+            List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
             sign = JWT.create()
                     .withJWTId(CommonUtils.getUUID(true))

@@ -31,11 +31,11 @@ public class PageVo {
     /**
      * 当前页(Jpa是0开头，Mybatis-Plus是1开头)
      */
-    @Schema(description = "当前页",example = "0")
+    @Schema(description = "当前页",type = "integer",defaultValue = "0")
     private Integer current = 0;
     /**
      * 页大小
      */
-    @Schema(description = "页大小",example = "10")
+    @Schema(description = "页大小",type = "integer",defaultValue = "10")
     private Integer size = 10;
 }

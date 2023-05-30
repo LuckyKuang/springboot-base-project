@@ -75,17 +75,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
+        // refreshToken校验
+        else if (servletPath.equals("/auth/v1/sign/refresh")){
+            Optional<String> token = RequestUtils.resolveToken(request);
+            if (token.isPresent() && RequestUtils.isLogin()) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            filterChain.doFilter(request, response);
+        }
         // 其他接口校验
         else {
             Optional<String> token = RequestUtils.resolveToken(request);
-            if (token.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (token.isPresent() && !RequestUtils.isLogin()) {
                 // 读取redis缓存
                 Object tokenCache = redisUtils.get(RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + token.get());
                 if (tokenCache == null) {
                     ResponseUtils.writeErrMsg(response, ErrorCode.TOKEN_INVALID);
+                    return;
+                }else {
+                    Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-                Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
         }

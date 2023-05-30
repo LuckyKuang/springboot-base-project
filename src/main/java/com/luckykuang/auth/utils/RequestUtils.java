@@ -18,13 +18,11 @@ package com.luckykuang.auth.utils;
 
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Menu;
 import com.luckykuang.auth.security.userdetails.LoginUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -53,6 +51,14 @@ public class RequestUtils {
             return Optional.of(bearerToken.substring(BEARER_HEAD.length()));
         }
         return Optional.empty();
+    }
+
+    /**
+     * 是否登录
+     * @return true-已登录 false-未登录
+     */
+    public static boolean isLogin(){
+        return SecurityContextHolder.getContext().getAuthentication() != null;
     }
 
     /**
@@ -116,9 +122,9 @@ public class RequestUtils {
      * @return roles
      */
     public static Optional<Set<String>> getRoles() {
-        Collection<? extends GrantedAuthority> authorities = getUser()
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_EXIST)).getAuthorities();
-        if (!CollectionUtils.isEmpty(authorities)){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             Set<String> roles = authorities.stream()
                     .filter(item -> item.getAuthority().startsWith(ROLE_UNDERLINE))
                     .map(item -> item.getAuthority().substring(ROLE_UNDERLINE.length()))
@@ -132,12 +138,12 @@ public class RequestUtils {
      * 获取用户菜单权限
      * @return menus
      */
-    public static Optional<Set<String>> getMenus() {
-        Set<Menu> menus = getUser().orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_EXIST)).getMenus();
-        if (!CollectionUtils.isEmpty(menus)){
-            Set<String> menusPerms = menus.stream().map(Menu::getPermissionName).collect(Collectors.toSet());
-            return Optional.of(menusPerms);
-        }
-        return Optional.empty();
-    }
+//    public static Optional<Set<String>> getMenus() {
+//        Set<Menu> menus = getUser().orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_EXIST)).getMenus();
+//        if (!CollectionUtils.isEmpty(menus)){
+//            Set<String> menusPerms = menus.stream().map(Menu::getPermissionName).collect(Collectors.toSet());
+//            return Optional.of(menusPerms);
+//        }
+//        return Optional.empty();
+//    }
 }
