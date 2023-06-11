@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.model;
+package com.luckykuang.auth.model.primary;
 
 import com.luckykuang.auth.base.BaseParam;
 import io.swagger.v3.oas.annotations.media.Schema;

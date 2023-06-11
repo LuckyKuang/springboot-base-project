@@ -1,6 +1,6 @@
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.repository.primary;
 
-import com.luckykuang.auth.model.Dept;
+import com.luckykuang.auth.model.primary.Dept;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

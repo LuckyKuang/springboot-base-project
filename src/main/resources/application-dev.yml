@@ -5,20 +5,40 @@ server:
     include-binding-errors: always
 
 spring:
+  # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/base-project?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&allowMultiQueries=true
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    primary:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/base-project?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+      username: root
+      password: 123456
+    second:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/base-project?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+      username: root
+      password: 123456
+    third:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/base-project?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true
+      username: root
+      password: 123456
     hikari:
-      connection-timeout: 10000
-      validation-timeout: 3000
-      idle-timeout: 60000
-      login-timeout: 5
-      max-lifetime: 60000
-      maximum-pool-size: 10
-      minimum-idle: 5
-      read-only: false
+      # 最大连接池数量
+      maximum-pool-size: 20
+      # 最小空闲线程数量
+      minimum-idle: 10
+      # 配置获取连接等待超时的时间
+      connectionTimeout: 30000
+      # 校验超时时间
+      validationTimeout: 5000
+      # 空闲连接存活最大时间，默认10分钟
+      idleTimeout: 600000
+      # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认30分钟
+      maxLifetime: 1800000
+      # 连接测试query（配置检测连接是否有效）
+      connectionTestQuery: SELECT 1
+      # 多久检查一次连接的活性
+      keepaliveTime: 30000
   data:
     redis:
       # Redis数据库索引（默认为0）
@@ -66,14 +86,24 @@ spring:
     # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
     baseline-on-migrate: true
 
-## App Properties
-app:
-  # jwt 加密盐
-  jwt-secret: luckykuang
-  # jwt 过期时间(ms)
-  jwt-expiration:
-    access-token-milliseconds: 300000
-    refresh-token-milliseconds: 600000
+# jwt 配置
+jwt:
+  # 加密盐
+  secret: luckykuang
+  # access_token过期时间(ms)
+  access-token-expiration-date: 300000
+  # refresh_token过期时间(ms)
+  refresh-token-expiration-date: 600000
+
+# 验证码配置
+easy:
+  captcha:
+    # 是否开启(暂未开发)
+    # enable: true
+    # 验证码类型: arithmetic-算术
+    type: arithmetic
+    # 验证码有效时间(单位：秒)
+    ttl: 120
 
 logging:
   level:

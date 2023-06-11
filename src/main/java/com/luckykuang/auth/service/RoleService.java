@@ -17,10 +17,10 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.request.RoleReq;
+import com.luckykuang.auth.model.primary.Role;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.request.RoleReq;
 
 import java.util.List;
 

@@ -17,12 +17,12 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.request.PasswordRed;
-import com.luckykuang.auth.request.UserReq;
+import com.luckykuang.auth.model.primary.User;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import com.luckykuang.auth.vo.UserDetailsVo;
+import com.luckykuang.auth.vo.request.PasswordRed;
+import com.luckykuang.auth.vo.request.UserReq;
 
 import java.util.List;
 import java.util.Optional;

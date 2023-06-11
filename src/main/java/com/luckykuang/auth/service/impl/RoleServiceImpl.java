@@ -19,14 +19,14 @@ package com.luckykuang.auth.service.impl;
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.repository.RoleRepository;
-import com.luckykuang.auth.request.RoleReq;
+import com.luckykuang.auth.model.primary.Role;
+import com.luckykuang.auth.repository.primary.RoleRepository;
 import com.luckykuang.auth.service.RoleService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.PageUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.request.RoleReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -74,7 +74,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+//    @Transactional(rollbackFor = Exception.class)
     public Role updateRole(Long id, RoleReq roleReq) {
         RoleReq from = RoleReq.from(roleReq);
         Optional<Role> repositoryById = roleRepository.findById(id);

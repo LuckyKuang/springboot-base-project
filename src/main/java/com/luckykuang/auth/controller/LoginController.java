@@ -17,10 +17,10 @@
 package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.response.CaptchaRsp;
-import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.service.LoginService;
+import com.luckykuang.auth.vo.request.LoginReq;
+import com.luckykuang.auth.vo.response.CaptchaRsp;
+import com.luckykuang.auth.vo.response.TokenRsp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

@@ -17,19 +17,19 @@
 package com.luckykuang.auth.service.impl;
 
 import com.luckykuang.auth.base.ApiResult;
+import com.luckykuang.auth.config.properties.EasyCaptchaProperties;
 import com.luckykuang.auth.constants.RedisConstants;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.properties.EasyCaptchaProperties;
-import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.response.CaptchaRsp;
-import com.luckykuang.auth.response.TokenRsp;
 import com.luckykuang.auth.security.properties.TokenSecretProperties;
 import com.luckykuang.auth.security.utils.JwtTokenProvider;
 import com.luckykuang.auth.service.LoginService;
 import com.luckykuang.auth.utils.CommonUtils;
 import com.luckykuang.auth.utils.RedisUtils;
 import com.luckykuang.auth.utils.RequestUtils;
+import com.luckykuang.auth.vo.request.LoginReq;
+import com.luckykuang.auth.vo.response.CaptchaRsp;
+import com.luckykuang.auth.vo.response.TokenRsp;
 import com.wf.captcha.*;
 import com.wf.captcha.base.Captcha;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,7 +73,7 @@ public class LoginServiceImpl implements LoginService {
         redisUtils.set(
                 RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
                 refreshToken,
-                tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
+                tokenSecretProperties.getAccessTokenExpirationDate() / 1000
         );
         return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
     }
@@ -89,7 +89,7 @@ public class LoginServiceImpl implements LoginService {
             redisUtils.set(
                     RedisConstants.REDIS_HEAD + RedisConstants.ACCESS_TOKEN + accessToken,
                     refreshToken,
-                    tokenSecretProperties.getJwtAccessTokenExpirationDate() / 1000
+                    tokenSecretProperties.getAccessTokenExpirationDate() / 1000
             );
             return ApiResult.success(TokenRsp.from(accessToken,refreshToken));
         }

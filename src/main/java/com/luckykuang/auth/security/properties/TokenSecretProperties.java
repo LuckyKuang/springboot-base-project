@@ -18,7 +18,7 @@ package com.luckykuang.auth.security.properties;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -29,11 +29,12 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 @Configuration
+@ConfigurationProperties(prefix = "jwt")
 public class TokenSecretProperties {
-    @Value("${app.jwt-secret:luckykuang}")
-    private String jwtSecret;
-    @Value("${app.jwt-expiration.access-token-milliseconds:10000}")
-    private long jwtAccessTokenExpirationDate;
-    @Value("${app.jwt-expiration.refresh-token-milliseconds:100000}")
-    private long jwtRefreshTokenExpirationDate;
+    // 加密盐
+    private String secret;
+    // access_token过期时间(ms)
+    private long accessTokenExpirationDate;
+    // refresh_token过期时间(ms)
+    private long refreshTokenExpirationDate;
 }

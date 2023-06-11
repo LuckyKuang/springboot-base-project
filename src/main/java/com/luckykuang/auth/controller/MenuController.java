@@ -17,11 +17,11 @@
 package com.luckykuang.auth.controller;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.model.Menu;
-import com.luckykuang.auth.request.MenuReq;
+import com.luckykuang.auth.model.primary.Menu;
 import com.luckykuang.auth.service.MenuService;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.request.MenuReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

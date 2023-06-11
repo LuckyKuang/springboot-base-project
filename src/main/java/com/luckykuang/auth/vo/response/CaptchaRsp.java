@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.response;
+package com.luckykuang.auth.vo.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import static com.luckykuang.auth.constants.CoreConstants.BEARER;
-
 /**
  * @author luckykuang
- * @date 2023/4/18 16:48
+ * @date 2023/5/17 11:19
  */
-public record TokenRsp(
-        @Schema(description = "验证令牌") String accessToken,
-        @Schema(description = "刷新令牌") String refreshToken,
-        @Schema(description = "令牌类型") String tokenType) {
-    public static TokenRsp from(String accessToken, String refreshToken){
-        return new TokenRsp(accessToken,refreshToken, BEARER);
+public record CaptchaRsp(@Schema(description = "验证码key") String captchaKey,
+                         @Schema(description = "验证码base64") String captchaBase64) {
+    public static CaptchaRsp from(String captchaKey, String captchaBase64){
+        return new CaptchaRsp(captchaKey,captchaBase64);
     }
 }

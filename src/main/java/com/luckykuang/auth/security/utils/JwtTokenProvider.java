@@ -73,7 +73,7 @@ public class JwtTokenProvider {
      * @return AccessToken
      */
     public String generateAccessToken(Authentication authentication){
-        return createToken(authentication, tokenSecretProperties.getJwtAccessTokenExpirationDate());
+        return createToken(authentication, tokenSecretProperties.getAccessTokenExpirationDate());
     }
 
     /**
@@ -82,7 +82,7 @@ public class JwtTokenProvider {
      * @return 刷新令牌
      */
     public String generateRefreshToken(Authentication authentication){
-        return createToken(authentication, tokenSecretProperties.getJwtRefreshTokenExpirationDate());
+        return createToken(authentication, tokenSecretProperties.getRefreshTokenExpirationDate());
     }
 
     /**
@@ -207,6 +207,6 @@ public class JwtTokenProvider {
      * 生产环境建议修改成RSA加密
      */
     private Algorithm getKey(){
-        return Algorithm.HMAC256(tokenSecretProperties.getJwtSecret());
+        return Algorithm.HMAC256(tokenSecretProperties.getSecret());
     }
 }

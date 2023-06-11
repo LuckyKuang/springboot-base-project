@@ -17,8 +17,8 @@
 package com.luckykuang.auth.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.luckykuang.auth.model.Menu;
-import com.luckykuang.auth.model.Role;
+import com.luckykuang.auth.model.primary.Menu;
+import com.luckykuang.auth.model.primary.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;

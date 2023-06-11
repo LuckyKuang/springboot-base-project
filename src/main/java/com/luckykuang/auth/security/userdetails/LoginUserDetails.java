@@ -16,7 +16,7 @@
 
 package com.luckykuang.auth.security.userdetails;
 
-import com.luckykuang.auth.model.Menu;
+import com.luckykuang.auth.model.primary.Menu;
 import com.luckykuang.auth.vo.UserDetailsVo;
 import lombok.Getter;
 import lombok.Setter;

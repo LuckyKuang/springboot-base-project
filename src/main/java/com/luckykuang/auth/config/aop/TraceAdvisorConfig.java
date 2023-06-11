@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.config;
+package com.luckykuang.auth.config.aop;
 
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.interceptor.CustomizableTraceInterceptor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * 方法出入参截取打印
  * @author luckykuang
  * @date 2023/4/27 15:52
  */
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Aspect
 @Configuration
 public class TraceAdvisorConfig {
 
     /**
+     * 切入点
      * 需要在配置文件里面将 com.luckykuang.auth.controller 包下面的日志级别设置成trace
      */
-    @Pointcut("execution(* com.luckykuang.auth.controller..*.*(..))")
-    public void monitor(){}
+    private static final String POINTCUT_EXPRESSION = "execution(* com.luckykuang.auth.controller..*.*(..))";
 
     /**
      * 监控追踪
@@ -53,7 +50,7 @@ public class TraceAdvisorConfig {
         interceptor.setExceptionMessage("响应异常 $[targetClassShortName]: $[methodName]: $[exception]");
         interceptor.setUseDynamicLogger(true);
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression("com.luckykuang.auth.config.TraceAdvisorConfig.monitor()");
+        pointcut.setExpression(POINTCUT_EXPRESSION);
         return new DefaultPointcutAdvisor(pointcut,interceptor);
     }
 }

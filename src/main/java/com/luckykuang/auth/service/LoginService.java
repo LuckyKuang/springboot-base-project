@@ -17,9 +17,9 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.request.LoginReq;
-import com.luckykuang.auth.response.CaptchaRsp;
-import com.luckykuang.auth.response.TokenRsp;
+import com.luckykuang.auth.vo.request.LoginReq;
+import com.luckykuang.auth.vo.response.CaptchaRsp;
+import com.luckykuang.auth.vo.response.TokenRsp;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**

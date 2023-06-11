@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.request;
+package com.luckykuang.auth.vo.request;
 
 import com.luckykuang.auth.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;

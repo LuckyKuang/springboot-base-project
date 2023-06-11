@@ -19,15 +19,13 @@ package com.luckykuang.auth.service.impl;
 import com.luckykuang.auth.base.ApiResult;
 import com.luckykuang.auth.constants.enums.ErrorCode;
 import com.luckykuang.auth.exception.BusinessException;
-import com.luckykuang.auth.model.Dept;
-import com.luckykuang.auth.model.Menu;
-import com.luckykuang.auth.model.Role;
-import com.luckykuang.auth.model.User;
-import com.luckykuang.auth.repository.DeptRepository;
-import com.luckykuang.auth.repository.RoleRepository;
-import com.luckykuang.auth.repository.UserRepository;
-import com.luckykuang.auth.request.PasswordRed;
-import com.luckykuang.auth.request.UserReq;
+import com.luckykuang.auth.model.primary.Dept;
+import com.luckykuang.auth.model.primary.Menu;
+import com.luckykuang.auth.model.primary.Role;
+import com.luckykuang.auth.model.primary.User;
+import com.luckykuang.auth.repository.primary.DeptRepository;
+import com.luckykuang.auth.repository.primary.RoleRepository;
+import com.luckykuang.auth.repository.primary.UserRepository;
 import com.luckykuang.auth.service.UserService;
 import com.luckykuang.auth.utils.AssertUtils;
 import com.luckykuang.auth.utils.BCryptUtils;
@@ -36,12 +34,13 @@ import com.luckykuang.auth.utils.RequestUtils;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
 import com.luckykuang.auth.vo.UserDetailsVo;
+import com.luckykuang.auth.vo.request.PasswordRed;
+import com.luckykuang.auth.vo.request.UserReq;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,7 +61,7 @@ public class UserServiceImpl implements UserService {
     private final DeptRepository deptRepository;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+//    @Transactional(rollbackFor = Exception.class)
     public User addUser(UserReq userReq) {
         UserReq from = UserReq.from(userReq);
         Optional<User> userOptional = userRepository.findByUsername(from.username());
@@ -92,7 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+//    @Transactional(rollbackFor = Exception.class)
     public User updateUser(Long id, UserReq userReq) {
         UserReq from = UserReq.from(userReq);
         Optional<User> repositoryById = userRepository.findById(id);

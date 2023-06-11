@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.response;
+package com.luckykuang.auth.repository.primary;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.luckykuang.auth.model.primary.Menu;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author luckykuang
- * @date 2023/5/17 11:19
+ * @date 2023/4/20 14:17
  */
-public record CaptchaRsp(@Schema(description = "验证码key") String captchaKey,
-                         @Schema(description = "验证码base64") String captchaBase64) {
-    public static CaptchaRsp from(String captchaKey, String captchaBase64){
-        return new CaptchaRsp(captchaKey,captchaBase64);
-    }
+@Repository
+public interface MenuRepository extends JpaRepository<Menu,Long> {
+
 }

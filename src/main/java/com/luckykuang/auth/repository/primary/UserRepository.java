@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.repository.primary;
 
-import com.luckykuang.auth.model.Menu;
+import com.luckykuang.auth.model.primary.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * @author luckykuang
  * @date 2023/4/20 14:17
  */
 @Repository
-public interface MenuRepository extends JpaRepository<Menu,Long> {
+public interface UserRepository extends JpaRepository<User,Long> {
+    Optional<User> findByUsername(String username);
 
+    Optional<User> findByIdIsNotAndUsername(Long id, String username);
+
+    Optional<User> findByPhone(String phone);
+
+    Optional<User> findByPassword(String password);
 }

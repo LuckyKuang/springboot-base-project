@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.repository.primary;
 
-import com.luckykuang.auth.model.Role;
+import com.luckykuang.auth.model.primary.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

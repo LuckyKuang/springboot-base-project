@@ -17,10 +17,10 @@
 package com.luckykuang.auth.service;
 
 import com.luckykuang.auth.base.ApiResult;
-import com.luckykuang.auth.model.Menu;
-import com.luckykuang.auth.request.MenuReq;
+import com.luckykuang.auth.model.primary.Menu;
 import com.luckykuang.auth.vo.PageResultVo;
 import com.luckykuang.auth.vo.PageVo;
+import com.luckykuang.auth.vo.request.MenuReq;
 
 import java.util.List;
 

@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.luckykuang.auth.repository;
+package com.luckykuang.auth.vo.response;
 
-import com.luckykuang.auth.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Optional;
+import static com.luckykuang.auth.constants.CoreConstants.BEARER;
 
 /**
  * @author luckykuang
- * @date 2023/4/20 14:17
+ * @date 2023/4/18 16:48
  */
-@Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    Optional<User> findByUsername(String username);
-
-    Optional<User> findByIdIsNotAndUsername(Long id, String username);
-
-    Optional<User> findByPhone(String phone);
-
-    Optional<User> findByPassword(String password);
+public record TokenRsp(
+        @Schema(description = "验证令牌") String accessToken,
+        @Schema(description = "刷新令牌") String refreshToken,
+        @Schema(description = "令牌类型") String tokenType) {
+    public static TokenRsp from(String accessToken, String refreshToken){
+        return new TokenRsp(accessToken,refreshToken, BEARER);
+    }
 }
