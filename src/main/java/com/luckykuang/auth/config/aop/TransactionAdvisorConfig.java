@@ -9,12 +9,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
+import org.springframework.transaction.interceptor.RollbackRuleAttribute;
+import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
+import java.util.Collections;
+
 /**
- * 全局事务配置
+ * 全局事务配置-只支持单一数据源
  * @author luckykuang
  * @date 2023/6/11 14:11
  */
@@ -40,10 +43,10 @@ public class TransactionAdvisorConfig {
     public TransactionInterceptor txAdvice() {
         NameMatchTransactionAttributeSource source = new NameMatchTransactionAttributeSource();
         // 查询
-        DefaultTransactionAttribute txAttributeRequiredReadOnly = new DefaultTransactionAttribute();
+        RuleBasedTransactionAttribute txAttributeRequiredReadOnly = new RuleBasedTransactionAttribute();
         // 事务默认级别：如果不存在，请创建一个新的。
         txAttributeRequiredReadOnly.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        // 只读
+        // 只读，不做更新操作
         txAttributeRequiredReadOnly.setReadOnly(true);
         // 匹配上如下方法名开头，都算是查询
         //【切记代码规约要做好】
@@ -58,19 +61,30 @@ public class TransactionAdvisorConfig {
         source.addTransactionalMethod("is*", txAttributeRequiredReadOnly);
 
         // 增删改
-        DefaultTransactionAttribute txAttributeRequired = new DefaultTransactionAttribute();
+        RuleBasedTransactionAttribute txAttributeRequired = new RuleBasedTransactionAttribute();
         // 事务默认级别：如果不存在，请创建一个新的。
         // 如果需要用到其他级别，请再方法上添加注解@Transactional覆盖
         txAttributeRequired.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        // 正则匹配
-        source.addTransactionalMethod("*", txAttributeRequired);
+        // 设置异常对象回滚
+        txAttributeRequired.setRollbackRules(Collections.singletonList(new RollbackRuleAttribute(Exception.class)));
+        // 匹配上如下方法名开头，都算是增删改
+        //【切记代码规约要做好】
+        source.addTransactionalMethod("add*", txAttributeRequired);
+        source.addTransactionalMethod("create*", txAttributeRequired);
+        source.addTransactionalMethod("save*", txAttributeRequired);
+        source.addTransactionalMethod("insert*", txAttributeRequired);
+        source.addTransactionalMethod("modify*", txAttributeRequired);
+        source.addTransactionalMethod("update*", txAttributeRequired);
+        source.addTransactionalMethod("del*", txAttributeRequired);
+        source.addTransactionalMethod("delete*", txAttributeRequired);
+        source.addTransactionalMethod("remove*", txAttributeRequired);
 
         return new TransactionInterceptor(transactionManager, source);
     }
 
     /**
      * 织入事务
-     * @return
+     * @return Advisor
      */
     @Bean
     public Advisor txAdviceAdvisor() {
